@@ -1,0 +1,23 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+const { title, description = 'Miss Diaspora Ghana — celebrating women of African descent.', ogImage, canonical } = Astro.props;
+const fullTitle = title === 'Home' ? 'Miss Diaspora Ghana' : `${title} · Miss Diaspora Ghana`;
+const url = new URL(Astro.url.pathname, Astro.site);
+---
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical ?? url.toString()} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url.toString()} />
+<meta property="og:type" content="website" />
+{ogImage && <meta property="og:image" content={ogImage} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}
