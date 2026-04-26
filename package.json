@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
+    "@astrojs/mdx": "^4.3.14",
     "@astrojs/react": "^4.4.2",
     "@sanity/client": "^6.22.0",
     "@sanity/image-url": "^1.1.0",
