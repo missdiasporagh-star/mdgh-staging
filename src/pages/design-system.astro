@@ -1,0 +1,89 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import Button from '~/components/ui/Button.astro';
+import Input from '~/components/ui/Input.astro';
+import Chip from '~/components/ui/Chip.astro';
+import Tag from '~/components/ui/Tag.astro';
+import FeatureCard from '~/components/ui/FeatureCard.astro';
+import PullQuote from '~/components/ui/PullQuote.astro';
+
+const swatches = [
+  ['Obsidian', '#050111', 'var(--color-obsidian)'],
+  ['Raised', '#0E0420', 'var(--color-bg-raised)'],
+  ['Deep Violet', '#1A0833', 'var(--color-deep-violet)'],
+  ['Surface', '#21104A', 'var(--color-surface)'],
+  ['Royal Violet', '#6B2BD9', 'var(--color-royal-violet)'],
+  ['Saffron', '#FFD166', 'var(--color-saffron)'],
+  ['Rose', '#FF7EB3', 'var(--color-rose)'],
+  ['Bone', '#FFF8EC', 'var(--color-bone)'],
+];
+---
+<PageLayout title="Design System">
+  <div style="max-width:1200px;margin:48px auto;padding:0 24px">
+
+    <HeroStrip eyebrow="Design System · v0.1">
+      <h1 style="font-family:var(--font-display);font-style:italic;font-size:clamp(48px,8vw,96px);margin:24px 0 12px;background:linear-gradient(120deg,var(--color-bone),var(--color-saffron) 60%,var(--color-rose));-webkit-background-clip:text;background-clip:text;color:transparent">She wears the future.</h1>
+      <p style="color:var(--color-text-2);max-width:540px">Tokens, components, motion. Every page in the platform composes from this kit.</p>
+    </HeroStrip>
+
+    <section style="margin-top:64px">
+      <Tag>01 · Color</Tag>
+      <h2 style="font-family:var(--font-display);font-size:32px;margin:8px 0 24px">Palette</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px">
+        {swatches.map(([name, hex, varname]) => (
+          <div style={`background:${varname};border-radius:var(--r-md);padding:18px;border:1px solid var(--border-subtle);min-height:130px;color:var(--color-text-1)`}>
+            <div style="font-weight:600">{name}</div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-3)">{hex}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section style="margin-top:64px">
+      <Tag>02 · Components</Tag>
+      <h2 style="font-family:var(--font-display);font-size:32px;margin:8px 0 24px">Core kit</h2>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px">
+        <Button variant="primary">Begin Application →</Button>
+        <Button variant="secondary">Watch the Story</Button>
+        <Button variant="ghost">Read more</Button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:32px">
+        <Input name="name" label="Full Name" placeholder="Your full name" required />
+        <Input name="email" label="Email" type="email" placeholder="email@diaspora.org" required />
+      </div>
+
+      <div style="margin-bottom:32px">
+        <Chip>Cycle 2026</Chip>
+        <Chip tone="saffron">Open</Chip>
+        <Chip tone="rose">Featured</Chip>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:32px">
+        <FeatureCard icon="👑" title="Crown Heritage Timeline">Every queen since founding — photo, era, story.</FeatureCard>
+        <FeatureCard icon="🌐" title="Diaspora Globe">A 3D rotating Earth dotted with cities where MDGH lives.</FeatureCard>
+        <FeatureCard icon="✨" title="Heritage Quiz">Six questions. One shareable result card.</FeatureCard>
+      </div>
+
+      <PullQuote attribution="Founder · Miss Diaspora Ghana">
+        We are not asking the world to crown our daughters. We are reminding the world that they already wear one.
+      </PullQuote>
+    </section>
+
+    <section style="margin-top:64px">
+      <Tag>03 · Type</Tag>
+      <h2 style="font-family:var(--font-display);font-size:32px;margin:8px 0 24px">Type scale</h2>
+      <div style="display:grid;gap:24px">
+        <div style="font-family:var(--font-display);font-style:italic;font-size:96px;font-weight:400;line-height:1">She becomes her.</div>
+        <div style="font-family:var(--font-display);font-size:60px;font-weight:600;line-height:1.05">A daughter returns home.</div>
+        <h1 style="font-family:var(--font-display);font-size:48px;font-weight:500;margin:0">The Twenty-Fifth Crown</h1>
+        <h2 style="font-family:var(--font-display);font-size:36px;font-weight:500;margin:0">The Heritage Timeline</h2>
+        <h3 style="font-family:var(--font-sans);font-size:24px;font-weight:700;margin:0">Cultural Identity, Leadership Training, Social Impact</h3>
+        <p style="font-size:18px;color:var(--color-text-2);max-width:640px;margin:0">Body large at 18px with 1.6 line height for long-form readability.</p>
+      </div>
+    </section>
+
+  </div>
+</PageLayout>
