@@ -1,0 +1,91 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import { getPage } from '~/lib/content/queries';
+
+const entry = await getPage('contact');
+if (!entry) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const { Content } = await entry.render();
+const data = entry.data;
+const hasMethods = Array.isArray(data.methods) && data.methods.length > 0;
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+---
+<PageLayout
+  title={data.seoTitle ?? data.title}
+  description={data.seoDescription ?? data.introduction}
+>
+  <article style="max-width:1000px;margin:var(--space-7) auto;padding:0 var(--space-5)">
+
+    <HeroStrip eyebrow={data.eyebrow ?? 'Get in touch'}>
+      {data.headline && (
+        <h1 style="position:relative;z-index:1;font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:500;margin:var(--space-5) 0 var(--space-4);max-width:900px;line-height:1.05">
+          {data.headline}
+        </h1>
+      )}
+      {data.introduction && (
+        <p style="position:relative;z-index:1;color:var(--color-text-2);font-size:var(--fs-body-l);max-width:560px;line-height:1.6">
+          {data.introduction}
+        </p>
+      )}
+    </HeroStrip>
+
+    {hasMethods && (
+      <section style="margin:var(--space-9) 0">
+        {(data.methodsEyebrow || data.methodsHeading) && (
+          <header style="margin-bottom:var(--space-6)">
+            {data.methodsEyebrow && (
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.methodsEyebrow}</p>
+            )}
+            {data.methodsHeading && (
+              <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.2">{data.methodsHeading}</h2>
+            )}
+          </header>
+        )}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-4)">
+          {(data.methods ?? []).map((m) => (
+            <a
+              class="method-card"
+              href={m.href}
+              {...(isExternal(m.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              aria-label={`${m.label} — ${m.value}`}
+              style="background:var(--color-bg-raised);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:var(--space-6);text-decoration:none;color:inherit;display:flex;gap:var(--space-4);align-items:center"
+            >
+              {m.icon && (
+                <div aria-hidden="true" style="width:48px;height:48px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--color-royal-violet),var(--color-rose));display:grid;place-items:center;font-size:22px;flex-shrink:0">{m.icon}</div>
+              )}
+              <div style="min-width:0">
+                <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.2em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-1)">{m.label}</p>
+                <p style="font-size:var(--fs-body-l);font-weight:600;margin:0;overflow-wrap:anywhere">{m.value}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose" style="max-width:760px;margin:var(--space-7) auto;font-size:var(--fs-body-l);line-height:1.7;color:var(--color-text-2)">
+      <Content />
+    </section>
+  </article>
+</PageLayout>
+
+<style>
+  .method-card {
+    transition: transform var(--dur-fast) var(--ease-emp), border-color var(--dur-fast) var(--ease-std), background var(--dur-fast) var(--ease-std);
+    will-change: transform;
+  }
+  .method-card:hover,
+  .method-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--color-saffron);
+    background: var(--color-deep-violet);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .method-card { transition: border-color var(--dur-fast) var(--ease-std), background var(--dur-fast) var(--ease-std); }
+    .method-card:hover,
+    .method-card:focus-visible { transform: none; }
+  }
+</style>

@@ -113,6 +113,18 @@ const pages = defineCollection({
         buttonLabel: z.string().default('Email partnerships team'),
       })
       .optional(),
+    methodsEyebrow: z.string().optional(),
+    methodsHeading: z.string().optional(),
+    methods: z
+      .array(
+        z.object({
+          icon: z.string().optional(),
+          label: z.string(),
+          value: z.string(),
+          href: z.string(),
+        }),
+      )
+      .optional(),
   }),
 });
 
