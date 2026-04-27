@@ -1,0 +1,19 @@
+---
+interface Props { color?: 'saffron' | 'rose' | 'mute'; }
+const { color = 'saffron' } = Astro.props;
+const colorVar = color === 'saffron' ? 'var(--color-saffron)' : color === 'rose' ? 'var(--color-rose)' : 'var(--color-text-3)';
+---
+<span class="mdgh-tag" style={`color:${colorVar}`}>
+  <slot />
+</span>
+
+<style>
+  .mdgh-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+</style>

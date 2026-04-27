@@ -1,0 +1,23 @@
+---
+interface Props { tone?: 'violet' | 'saffron' | 'rose'; }
+const { tone = 'violet' } = Astro.props;
+---
+<span class={`mdgh-chip mdgh-chip--${tone}`}>
+  <slot />
+</span>
+
+<style>
+  .mdgh-chip {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--color-text-1);
+    border: 1px solid;
+  }
+  .mdgh-chip--violet { background: rgba(107, 43, 217, 0.2); border-color: rgba(107, 43, 217, 0.4); }
+  .mdgh-chip--saffron { background: rgba(255, 209, 102, 0.15); border-color: rgba(255, 209, 102, 0.4); color: var(--color-saffron); }
+  .mdgh-chip--rose { background: rgba(255, 126, 179, 0.12); border-color: rgba(255, 126, 179, 0.35); color: var(--color-rose); }
+</style>
