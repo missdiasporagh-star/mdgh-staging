@@ -34,7 +34,7 @@ const hasPillars = Array.isArray(data.pillars) && data.pillars.length > 0;
     {hasPillars && (
       <section style="margin:var(--space-9) 0">
         {(data.pillarsEyebrow || data.pillarsHeading) && (
-          <header style="margin-bottom:var(--space-6);text-align:center">
+          <header style="margin-bottom:var(--space-6)">
             {data.pillarsEyebrow && (
               <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.pillarsEyebrow}</p>
             )}
@@ -54,7 +54,7 @@ const hasPillars = Array.isArray(data.pillars) && data.pillars.length > 0;
                   {p.icon && (
                     <div aria-hidden="true" style="width:56px;height:56px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--color-royal-violet),var(--color-rose));display:grid;place-items:center;font-size:28px;flex-shrink:0">{p.icon}</div>
                   )}
-                  <h3 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.15">{p.title}</h3>
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:500;margin:0;line-height:1.2">{p.title}</h3>
                 </div>
                 <p style="color:var(--color-text-2);font-size:var(--fs-body-l);line-height:1.6;margin:0 0 var(--space-5)">{p.description}</p>
                 {p.detail && (
