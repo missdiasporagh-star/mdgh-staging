@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('TopNav', () => {
-  test('renders all 5 primary nav items + Apply CTA', async ({ page }) => {
+  test('renders all 5 primary nav items + Apply CTA', async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name === 'mobile-chrome',
+      'desktop nav is display:none below 768px — mobile coverage is in the hamburger test',
+    );
     await page.goto('/');
     // Dismiss greeting if present
     const skip = page.getByRole('button', { name: /skip greeting/i });
