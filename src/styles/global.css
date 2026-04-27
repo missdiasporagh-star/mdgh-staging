@@ -1,9 +1,9 @@
-@import "tailwindcss";
-@import "@fontsource-variable/fraunces";
-@import "@fontsource-variable/inter";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/600.css";
-@import "./tokens.css";
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/inter';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import './tokens.css';
 
 @theme {
   --color-obsidian: var(--color-obsidian);
@@ -15,9 +15,12 @@
   --font-mono: var(--font-mono);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   background: var(--color-obsidian);
@@ -29,7 +32,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-::selection { background: var(--color-saffron); color: var(--color-obsidian); }
+::selection {
+  background: var(--color-saffron);
+  color: var(--color-obsidian);
+}
 
 :focus-visible {
   outline: 2px solid var(--color-saffron);
@@ -38,7 +44,9 @@ html, body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

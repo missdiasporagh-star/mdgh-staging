@@ -45,11 +45,13 @@ const cycles = defineCollection({
     opensAt: z.coerce.date().optional(),
     closesAt: z.coerce.date().optional(),
     finaleAt: z.coerce.date().optional(),
-    applicationFee: z.object({
-      amount: z.number().optional(),
-      currency: z.string().default('USD'),
-      displayText: z.string().optional(),
-    }).optional(),
+    applicationFee: z
+      .object({
+        amount: z.number().optional(),
+        currency: z.string().default('USD'),
+        displayText: z.string().optional(),
+      })
+      .optional(),
     eligibility: z.array(z.string()).optional(),
     whatYoullNeed: z.array(z.string()).optional(),
   }),
@@ -65,16 +67,20 @@ const contestants = defineCollection({
     heroImage: z.string(),
     heroImageAlt: z.string(),
     heroVideo: z.object({ kind: z.enum(['youtube', 'drive']), url: z.string() }).optional(),
-    charityPlatform: z.object({
-      title: z.string(),
-      description: z.string(),
-      url: z.string().optional(),
-    }).optional(),
+    charityPlatform: z
+      .object({
+        title: z.string(),
+        description: z.string(),
+        url: z.string().optional(),
+      })
+      .optional(),
     gallery: z.array(mediaRef).default([]),
-    social: z.object({
-      instagram: z.string().optional(),
-      tiktok: z.string().optional(),
-    }).optional(),
+    social: z
+      .object({
+        instagram: z.string().optional(),
+        tiktok: z.string().optional(),
+      })
+      .optional(),
     sortOrder: z.number().default(0),
   }),
 });
@@ -92,11 +98,13 @@ const queens = defineCollection({
     achievements: z.array(z.string()).default([]),
     currentCity: z.string().optional(),
     currentRole: z.string().optional(),
-    social: z.object({
-      instagram: z.string().optional(),
-      linkedin: z.string().optional(),
-      website: z.string().optional(),
-    }).optional(),
+    social: z
+      .object({
+        instagram: z.string().optional(),
+        linkedin: z.string().optional(),
+        website: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -135,10 +143,14 @@ const quizQuestions = defineCollection({
     order: z.number().int(),
     question: z.string(),
     illustration: z.string().optional(),
-    options: z.array(z.object({
-      label: z.string(),
-      weights: z.array(z.object({ region: REGIONS, weight: z.number().min(0).max(5) })),
-    })).length(4),
+    options: z
+      .array(
+        z.object({
+          label: z.string(),
+          weights: z.array(z.object({ region: REGIONS, weight: z.number().min(0).max(5) })),
+        }),
+      )
+      .length(4),
   }),
 });
 

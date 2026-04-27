@@ -27,9 +27,9 @@
   --color-danger: #fb7185;
 
   /* Type families */
-  --font-display: "Fraunces Variable", Georgia, serif;
-  --font-sans: "Inter Variable", -apple-system, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Inter Variable', -apple-system, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Type scale */
   --fs-display-l: 96px;
@@ -42,12 +42,23 @@
   --fs-meta: 11px;
 
   /* Spacing (8-pt) */
-  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
-  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
-  --space-9: 96px; --space-10: 128px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
 
   /* Radii */
-  --r-sm: 6px; --r-md: 12px; --r-lg: 20px; --r-xl: 32px; --r-full: 9999px;
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 32px;
+  --r-full: 9999px;
 
   /* Easings */
   --ease-emp: cubic-bezier(0.2, 0.7, 0.1, 1);

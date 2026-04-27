@@ -5,10 +5,16 @@ interface Props {
   ogImage?: string;
   canonical?: string;
 }
-const { title, description = 'Miss Diaspora Ghana — celebrating women of African descent.', ogImage, canonical } = Astro.props;
+const {
+  title,
+  description = 'Miss Diaspora Ghana — celebrating women of African descent.',
+  ogImage,
+  canonical,
+} = Astro.props;
 const fullTitle = title === 'Home' ? 'Miss Diaspora Ghana' : `${title} · Miss Diaspora Ghana`;
 const url = new URL(Astro.url.pathname, Astro.site);
 ---
+
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical ?? url.toString()} />

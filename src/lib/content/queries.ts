@@ -28,7 +28,10 @@ export async function getContestantsByCycle(cycleSlug: string) {
   const all = await getCollection('contestants');
   return all
     .filter((c) => c.data.cycle.id === cycleSlug)
-    .sort((a, b) => (a.data.sortOrder ?? 0) - (b.data.sortOrder ?? 0) || a.data.name.localeCompare(b.data.name));
+    .sort(
+      (a, b) =>
+        (a.data.sortOrder ?? 0) - (b.data.sortOrder ?? 0) || a.data.name.localeCompare(b.data.name),
+    );
 }
 
 export async function getContestant(slug: string) {
