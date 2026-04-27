@@ -34,6 +34,8 @@ const pages = defineCollection({
     seoDescription: z.string().optional(),
     heroImage: z.string().optional(),
     heroImageAlt: z.string().optional(),
+    leadershipEyebrow: z.string().optional(),
+    leadershipHeading: z.string().optional(),
     leadership: z
       .array(
         z.object({
