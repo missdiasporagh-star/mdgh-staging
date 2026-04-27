@@ -21,5 +21,9 @@ const { title, description, ogImage } = Astro.props;
   </head>
   <body>
     <slot />
+    <script>
+      import { initLenis } from '~/lib/motion/lenis';
+      initLenis();
+    </script>
   </body>
 </html>
