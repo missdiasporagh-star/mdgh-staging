@@ -47,6 +47,19 @@ const pages = defineCollection({
         }),
       )
       .optional(),
+    pillarsEyebrow: z.string().optional(),
+    pillarsHeading: z.string().optional(),
+    pillars: z
+      .array(
+        z.object({
+          icon: z.string().optional(),
+          number: z.string().optional(),
+          title: z.string(),
+          description: z.string(),
+          detail: z.string().optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 

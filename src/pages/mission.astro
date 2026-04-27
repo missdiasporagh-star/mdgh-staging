@@ -1,0 +1,74 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import { getPage } from '~/lib/content/queries';
+
+const entry = await getPage('mission');
+if (!entry) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const { Content } = await entry.render();
+const data = entry.data;
+const hasPillars = Array.isArray(data.pillars) && data.pillars.length > 0;
+---
+<PageLayout
+  title={data.seoTitle ?? data.title}
+  description={data.seoDescription ?? data.introduction}
+>
+  <article style="max-width:1200px;margin:var(--space-7) auto;padding:0 var(--space-5)">
+
+    <HeroStrip eyebrow={data.eyebrow ?? 'Our Mission'}>
+      {data.headline && (
+        <h1 style="font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:500;line-height:1.05;margin:var(--space-5) 0 var(--space-4);max-width:900px;position:relative;z-index:1">
+          {data.headline}
+        </h1>
+      )}
+      {data.introduction && (
+        <p style="color:var(--color-text-2);font-size:var(--fs-body-l);max-width:640px;line-height:1.6;position:relative;z-index:1">
+          {data.introduction}
+        </p>
+      )}
+    </HeroStrip>
+
+    {hasPillars && (
+      <section style="margin:var(--space-9) 0">
+        {(data.pillarsEyebrow || data.pillarsHeading) && (
+          <header style="margin-bottom:var(--space-6);text-align:center">
+            {data.pillarsEyebrow && (
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.pillarsEyebrow}</p>
+            )}
+            {data.pillarsHeading && (
+              <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.15">{data.pillarsHeading}</h2>
+            )}
+          </header>
+        )}
+        <div style="display:grid;gap:var(--space-6)">
+          {(data.pillars ?? []).map((p) => (
+            <article style="position:relative;overflow:hidden;background:linear-gradient(160deg,var(--color-surface) 0%,var(--color-deep-violet) 100%);border:1px solid var(--border-subtle);border-radius:var(--r-xl);padding:var(--space-7)">
+              {p.number && (
+                <div aria-hidden="true" style="position:absolute;top:var(--space-5);right:var(--space-6);font-family:var(--font-display);font-size:140px;font-weight:800;color:rgba(255,209,102,0.05);line-height:1;pointer-events:none">{p.number}</div>
+              )}
+              <div style="position:relative;z-index:1;max-width:720px">
+                <div style="display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-5)">
+                  {p.icon && (
+                    <div aria-hidden="true" style="width:56px;height:56px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--color-royal-violet),var(--color-rose));display:grid;place-items:center;font-size:28px;flex-shrink:0">{p.icon}</div>
+                  )}
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.15">{p.title}</h3>
+                </div>
+                <p style="color:var(--color-text-2);font-size:var(--fs-body-l);line-height:1.6;margin:0 0 var(--space-5)">{p.description}</p>
+                {p.detail && (
+                  <p style="color:var(--color-text-2);font-size:var(--fs-body);line-height:1.7;margin:0">{p.detail}</p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose" style="max-width:760px;margin:var(--space-7) auto">
+      <Content />
+    </section>
+  </article>
+</PageLayout>
