@@ -51,10 +51,9 @@ const hasPrograms = Array.isArray(data.programs) && data.programs.length > 0;
                 {p.image && (
                   <img
                     src={p.image}
-                    alt={p.imageAlt ?? p.title}
+                    alt={p.imageAlt ?? ''}
                     loading="lazy"
                     decoding="async"
-                    onerror="this.style.display='none'"
                   />
                 )}
               </figure>
