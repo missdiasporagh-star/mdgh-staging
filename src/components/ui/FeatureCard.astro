@@ -1,0 +1,55 @@
+---
+interface Props { icon?: string; title: string; href?: string; }
+const { icon, title, href } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+<Tag class="mdgh-fcard" href={href}>
+  {icon && <div class="mdgh-fcard__icon">{icon}</div>}
+  <h3 class="mdgh-fcard__title">{title}</h3>
+  <p class="mdgh-fcard__body"><slot /></p>
+</Tag>
+
+<style>
+  .mdgh-fcard {
+    background: linear-gradient(160deg, var(--color-surface) 0%, var(--color-deep-violet) 100%);
+    border-radius: var(--r-lg);
+    padding: 28px;
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    overflow: hidden;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform var(--dur-base) var(--ease-emp),
+      border-color var(--dur-base) var(--ease-emp);
+  }
+  .mdgh-fcard:hover { transform: translateY(-4px); border-color: var(--color-saffron); }
+  .mdgh-fcard::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255, 126, 179, 0.3), transparent 70%);
+    pointer-events: none;
+  }
+  .mdgh-fcard__icon {
+    width: 48px; height: 48px;
+    border-radius: var(--r-md);
+    background: linear-gradient(135deg, var(--color-royal-violet), var(--color-rose));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .mdgh-fcard__title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+  }
+  .mdgh-fcard__body {
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0;
+  }
+</style>
