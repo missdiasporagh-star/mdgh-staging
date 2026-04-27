@@ -32,6 +32,19 @@ const pages = defineCollection({
     introduction: z.string().optional(),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
+    heroImage: z.string().optional(),
+    heroImageAlt: z.string().optional(),
+    leadership: z
+      .array(
+        z.object({
+          name: z.string(),
+          role: z.string(),
+          photo: z.string().optional(),
+          photoAlt: z.string().optional(),
+          bio: z.string().optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 
