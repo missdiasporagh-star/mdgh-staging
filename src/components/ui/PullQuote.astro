@@ -1,0 +1,31 @@
+---
+interface Props { attribution?: string; }
+const { attribution } = Astro.props;
+---
+<figure class="mdgh-pq">
+  <blockquote class="mdgh-pq__body"><slot /></blockquote>
+  {attribution && <figcaption class="mdgh-pq__attr">— {attribution}</figcaption>}
+</figure>
+
+<style>
+  .mdgh-pq { margin: 0; max-width: 640px; }
+  .mdgh-pq__body {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.3;
+    border-left: 3px solid var(--color-saffron);
+    padding-left: 24px;
+    color: var(--color-bone);
+    margin: 0;
+  }
+  .mdgh-pq__attr {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--color-text-3);
+    letter-spacing: 0.15em;
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+</style>

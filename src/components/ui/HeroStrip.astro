@@ -1,0 +1,38 @@
+---
+interface Props { eyebrow?: string; }
+const { eyebrow } = Astro.props;
+---
+<section class="mdgh-hero">
+  {eyebrow && <span class="mdgh-hero__eyebrow">{eyebrow}</span>}
+  <slot />
+</section>
+
+<style>
+  .mdgh-hero {
+    background:
+      radial-gradient(60% 80% at 80% 20%, rgba(107, 43, 217, 0.5), transparent 60%),
+      radial-gradient(50% 60% at 20% 80%, rgba(255, 126, 179, 0.25), transparent 60%),
+      linear-gradient(135deg, var(--color-deep-violet) 0%, var(--color-obsidian) 100%);
+    border-radius: var(--r-xl);
+    padding: clamp(40px, 6vw, 96px) clamp(24px, 4vw, 56px);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+  }
+  .mdgh-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+  .mdgh-hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    position: relative;
+    z-index: 1;
+  }
+</style>
