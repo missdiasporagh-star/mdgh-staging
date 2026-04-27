@@ -1,0 +1,8 @@
+dist/
+.astro/
+node_modules/
+public/
+.wrangler/
+playwright-report/
+test-results/
+package-lock.json
