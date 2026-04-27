@@ -1,0 +1,97 @@
+---
+const cols = [
+  {
+    title: 'Explore',
+    links: [
+      { href: '/about', label: 'About' },
+      { href: '/mission', label: 'Mission' },
+      { href: '/programs', label: 'Programs' },
+    ],
+  },
+  {
+    title: 'Discover',
+    links: [
+      { href: '/heritage', label: 'Crown Heritage' },
+      { href: '/diaspora', label: 'Diaspora Globe' },
+      { href: '/quiz', label: 'Heritage Quiz' },
+    ],
+  },
+  {
+    title: 'Connect',
+    links: [
+      { href: '/apply', label: 'Apply' },
+      { href: '/sponsors', label: 'For Sponsors' },
+      { href: '/news', label: 'Press' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
+];
+const year = new Date().getFullYear();
+---
+<footer class="mdgh-foot">
+  <div class="mdgh-foot__inner">
+    <div class="mdgh-foot__brand">
+      <img src="/logos/mdgh-logo-transparent.png" alt="Miss Diaspora Ghana" width="180" height="48" />
+      <p class="mdgh-foot__tag">Crowning the women who carry continents.</p>
+    </div>
+
+    <div class="mdgh-foot__cols">
+      {cols.map((c) => (
+        <div>
+          <h4>{c.title}</h4>
+          <ul>{c.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="mdgh-foot__legal">
+    <span>© {year} Nubian Crown Company Limited. All rights reserved.</span>
+    <nav><a href="/legal/privacy">Privacy</a> · <a href="/legal/terms">Terms</a></nav>
+  </div>
+</footer>
+
+<style>
+  .mdgh-foot {
+    border-top: 1px solid var(--border-subtle);
+    padding: 64px 24px 32px;
+    background: var(--color-bg-raised);
+  }
+  .mdgh-foot__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 48px;
+  }
+  .mdgh-foot__tag { color: var(--color-text-3); font-size: 14px; max-width: 280px; }
+  .mdgh-foot__cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .mdgh-foot__cols h4 {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    margin: 0 0 16px;
+  }
+  .mdgh-foot__cols ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  .mdgh-foot__cols a { color: var(--color-text-2); text-decoration: none; font-size: 14px; }
+  .mdgh-foot__cols a:hover { color: var(--color-text-1); }
+  .mdgh-foot__legal {
+    max-width: 1280px;
+    margin: 48px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-3);
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .mdgh-foot__legal a { color: var(--color-text-2); text-decoration: none; }
+  @media (max-width: 768px) {
+    .mdgh-foot__inner { grid-template-columns: 1fr; }
+    .mdgh-foot__cols { grid-template-columns: 1fr 1fr; }
+  }
+</style>
