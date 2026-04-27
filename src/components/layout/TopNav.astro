@@ -1,0 +1,119 @@
+---
+const items = [
+  { href: '/', label: 'Story' },
+  { href: '/heritage', label: 'Heritage' },
+  { href: '/contestants', label: 'Contestants' },
+  { href: '/sponsors', label: 'For Sponsors' },
+  { href: '/news', label: 'Press' },
+];
+const path = Astro.url.pathname;
+---
+<header class="mdgh-nav">
+  <div class="mdgh-nav__inner">
+    <a class="mdgh-nav__brand" href="/" aria-label="Miss Diaspora Ghana — Home">
+      <img src="/logos/mdgh-logo-transparent.png" alt="" width="140" height="40" />
+    </a>
+
+    <nav class="mdgh-nav__items" aria-label="Primary">
+      {items.map((it) => (
+        <a
+          href={it.href}
+          class={`mdgh-nav__link${path === it.href || (it.href !== '/' && path.startsWith(it.href)) ? ' is-active' : ''}`}
+        >
+          {it.label}
+        </a>
+      ))}
+    </nav>
+
+    <a href="/apply" class="mdgh-nav__cta">Apply</a>
+
+    <button class="mdgh-nav__toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mdgh-nav__mobile" id="mobile-nav" hidden>
+    {items.map((it) => <a class="mdgh-nav__mobile-link" href={it.href}>{it.label}</a>)}
+    <a class="mdgh-nav__mobile-cta" href="/apply">Apply for Crown</a>
+  </div>
+</header>
+
+<style>
+  .mdgh-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(5, 1, 17, 0.78);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .mdgh-nav__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 24px;
+  }
+  .mdgh-nav__brand img { display: block; }
+  .mdgh-nav__items { display: flex; gap: 8px; justify-content: center; }
+  .mdgh-nav__link {
+    color: var(--color-text-2);
+    text-decoration: none;
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: var(--r-full);
+    transition:
+      color var(--dur-fast) var(--ease-std),
+      background var(--dur-fast) var(--ease-std);
+  }
+  .mdgh-nav__link:hover { color: var(--color-text-1); background: rgba(255, 255, 255, 0.04); }
+  .mdgh-nav__link.is-active { color: var(--color-saffron); }
+
+  .mdgh-nav__cta {
+    background: linear-gradient(135deg, var(--color-saffron), #ffaa3d);
+    color: var(--color-obsidian);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: var(--r-full);
+    font-size: 14px;
+    transition: transform var(--dur-fast) var(--ease-emp);
+  }
+  .mdgh-nav__cta:hover { transform: translateY(-1px); }
+
+  .mdgh-nav__toggle { display: none; background: none; border: 0; cursor: pointer; padding: 8px; }
+  .mdgh-nav__toggle span { display: block; width: 22px; height: 2px; background: var(--color-text-1); margin: 4px 0; }
+
+  .mdgh-nav__mobile {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 24px 24px;
+    background: var(--color-obsidian);
+    border-top: 1px solid var(--border-subtle);
+  }
+  .mdgh-nav__mobile-link { color: var(--color-text-1); text-decoration: none; padding: 14px 8px; font-size: 18px; }
+  .mdgh-nav__mobile-cta {
+    background: var(--color-saffron); color: var(--color-obsidian);
+    text-decoration: none; padding: 14px; text-align: center;
+    border-radius: var(--r-full); font-weight: 600; margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .mdgh-nav__items, .mdgh-nav__cta { display: none; }
+    .mdgh-nav__toggle { display: block; }
+    .mdgh-nav__inner { grid-template-columns: auto 1fr auto; }
+    .mdgh-nav__mobile[hidden] { display: none; }
+    .mdgh-nav__mobile:not([hidden]) { display: flex; }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.mdgh-nav__toggle');
+  const panel = document.querySelector<HTMLElement>('#mobile-nav');
+  toggle?.addEventListener('click', () => {
+    const open = panel?.hasAttribute('hidden');
+    if (open) panel?.removeAttribute('hidden'); else panel?.setAttribute('hidden', '');
+    toggle?.setAttribute('aria-expanded', String(!!open));
+  });
+</script>
