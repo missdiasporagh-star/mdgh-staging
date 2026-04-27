@@ -1,0 +1,124 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import Button from '~/components/ui/Button.astro';
+import { getPage } from '~/lib/content/queries';
+
+const entry = await getPage('sponsors');
+if (!entry) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const { Content } = await entry.render();
+const data = entry.data;
+const hasTiers = Array.isArray(data.tiers) && data.tiers.length > 0;
+const hasPartners = Array.isArray(data.partners) && data.partners.length > 0;
+---
+<PageLayout
+  title={data.seoTitle ?? data.title}
+  description={data.seoDescription ?? data.introduction}
+>
+  <article style="max-width:1200px;margin:var(--space-7) auto;padding:0 var(--space-5)">
+
+    <HeroStrip eyebrow={data.eyebrow ?? 'For Sponsors & Partners'}>
+      {data.headline && (
+        <h1 style="font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:500;line-height:1.05;margin:var(--space-5) 0 var(--space-4);max-width:900px;position:relative;z-index:1">
+          {data.headline}
+        </h1>
+      )}
+      {data.introduction && (
+        <p style="color:var(--color-text-2);font-size:var(--fs-body-l);max-width:640px;line-height:1.6;position:relative;z-index:1">
+          {data.introduction}
+        </p>
+      )}
+    </HeroStrip>
+
+    {hasTiers && (
+      <section style="margin:var(--space-9) 0">
+        {(data.tiersEyebrow || data.tiersHeading) && (
+          <header style="margin-bottom:var(--space-7)">
+            {data.tiersEyebrow && (
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.tiersEyebrow}</p>
+            )}
+            {data.tiersHeading && (
+              <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.2">{data.tiersHeading}</h2>
+            )}
+          </header>
+        )}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-5)">
+          {(data.tiers ?? []).map((t) => (
+            <article style={`position:relative;background:linear-gradient(160deg,var(--color-surface),var(--color-deep-violet));border:1px solid ${t.featured ? 'var(--color-saffron)' : 'var(--border-subtle)'};border-radius:var(--r-xl);padding:var(--space-6)`}>
+              {t.featured && (
+                <div aria-hidden="true" style="position:absolute;top:-12px;left:var(--space-5);background:var(--color-saffron);color:var(--color-obsidian);font-family:var(--font-mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--r-full);font-weight:700">Recommended</div>
+              )}
+              <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:500;margin:0 0 var(--space-2);line-height:1.2">{t.label}</h3>
+              {t.priceText && (
+                <p style="font-family:var(--font-mono);font-size:var(--fs-body);color:var(--color-saffron);margin:0 0 var(--space-5)">{t.priceText}</p>
+              )}
+              {t.benefits && t.benefits.length > 0 && (
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:var(--space-2)">
+                  {t.benefits.map((b) => (
+                    <li style="display:flex;gap:var(--space-3);align-items:start;color:var(--color-text-2);font-size:14px;line-height:1.5">
+                      <span aria-hidden="true" style="color:var(--color-saffron);flex-shrink:0">&#10003;</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {hasPartners && (
+      <section style="margin:var(--space-9) 0">
+        {(data.partnersEyebrow || data.partnersHeading) && (
+          <header style="margin-bottom:var(--space-7)">
+            {data.partnersEyebrow && (
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.partnersEyebrow}</p>
+            )}
+            {data.partnersHeading && (
+              <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.2">{data.partnersHeading}</h2>
+            )}
+          </header>
+        )}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--space-6);align-items:center">
+          {(data.partners ?? []).map((p) => (
+            <a
+              href={p.url ?? '#'}
+              target={p.url && p.url !== '#' ? '_blank' : undefined}
+              rel={p.url && p.url !== '#' ? 'noopener' : undefined}
+              aria-label={p.name}
+              style="display:flex;align-items:center;justify-content:center;padding:var(--space-5);background:rgba(255,255,255,0.06);border-radius:var(--r-md);min-height:120px;text-decoration:none;border:1px solid var(--border-subtle);transition:transform var(--dur-fast) var(--ease-emp),background var(--dur-fast) var(--ease-std)"
+            >
+              {p.logo && (
+                <img
+                  src={p.logo}
+                  alt={p.logoAlt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                  style="max-width:140px;max-height:80px;object-fit:contain;filter:brightness(1.1) contrast(0.95)"
+                />
+              )}
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {data.sponsorsCta && (
+      <section style="margin:var(--space-9) 0;padding:var(--space-9) var(--space-7);background:linear-gradient(160deg,var(--color-deep-violet),var(--color-obsidian));border:1px solid var(--border-subtle);border-radius:var(--r-xl);text-align:center">
+        <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0 0 var(--space-4);line-height:1.2">{data.sponsorsCta.heading}</h2>
+        {data.sponsorsCta.body && (
+          <p style="color:var(--color-text-2);font-size:var(--fs-body-l);max-width:540px;margin:0 auto var(--space-5);line-height:1.6">{data.sponsorsCta.body}</p>
+        )}
+        <Button variant="primary" href={`mailto:${data.sponsorsCta.email}`}>{data.sponsorsCta.buttonLabel}</Button>
+      </section>
+    )}
+
+    <section class="prose" style="max-width:760px;margin:var(--space-7) auto">
+      <Content />
+    </section>
+  </article>
+</PageLayout>

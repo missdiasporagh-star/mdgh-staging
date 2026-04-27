@@ -80,6 +80,39 @@ const pages = defineCollection({
         }),
       )
       .optional(),
+    tiersEyebrow: z.string().optional(),
+    tiersHeading: z.string().optional(),
+    tiers: z
+      .array(
+        z.object({
+          label: z.string(),
+          priceText: z.string().optional(),
+          benefits: z.array(z.string()).default([]),
+          featured: z.boolean().default(false),
+        }),
+      )
+      .optional(),
+    partnersEyebrow: z.string().optional(),
+    partnersHeading: z.string().optional(),
+    partners: z
+      .array(
+        z.object({
+          name: z.string(),
+          logo: z.string().optional(),
+          logoAlt: z.string().optional(),
+          url: z.string().optional(),
+          tier: z.string().optional(),
+        }),
+      )
+      .optional(),
+    sponsorsCta: z
+      .object({
+        heading: z.string(),
+        body: z.string().optional(),
+        email: z.string(),
+        buttonLabel: z.string().default('Email partnerships team'),
+      })
+      .optional(),
   }),
 });
 
