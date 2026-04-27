@@ -1,0 +1,137 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import { getAllPress } from '~/lib/content/queries';
+
+const articles = await getAllPress();
+const featured = articles.find((a) => a.data.featured) ?? articles[0];
+const rest = featured ? articles.filter((a) => a.id !== featured.id) : articles;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+type Article = (typeof articles)[number];
+const linkFor = (a: Article) => a.data.externalUrl ?? `/news/${a.slug}`;
+const isExternal = (a: Article) => Boolean(a.data.externalUrl);
+---
+<PageLayout
+  title="Press & Newsroom"
+  description="Press coverage and announcements from Miss Diaspora Ghana."
+>
+  <article style="max-width:1200px;margin:var(--space-7) auto;padding:0 var(--space-5)">
+
+    <HeroStrip eyebrow="Press · Newsroom">
+      <h1 style="position:relative;z-index:1;font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:500;margin:var(--space-5) 0 var(--space-4);max-width:900px;line-height:1.05">
+        In the press.
+      </h1>
+      <p style="position:relative;z-index:1;color:var(--color-text-2);font-size:var(--fs-body-l);max-width:540px;line-height:1.6">
+        Stories, interviews, announcements about the women, the platform, the movement.
+      </p>
+    </HeroStrip>
+
+    {featured && (
+      <a
+        class="news-featured"
+        href={linkFor(featured)}
+        {...(isExternal(featured) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        style="display:grid;grid-template-columns:1.4fr 1fr;gap:var(--space-6);margin:var(--space-9) 0;text-decoration:none;color:inherit;align-items:center"
+      >
+        <figure class="news-featured__figure" style="margin:0;border-radius:var(--r-lg);overflow:hidden;background:linear-gradient(135deg,var(--color-deep-violet),var(--color-surface));border:1px solid var(--border-subtle);aspect-ratio:5/3">
+          {featured.data.coverImage && (
+            <img
+              src={featured.data.coverImage}
+              alt={featured.data.coverImageAlt ?? ''}
+              loading="lazy"
+              decoding="async"
+              style="width:100%;height:100%;object-fit:cover;display:block"
+            />
+          )}
+        </figure>
+        <div>
+          <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-3)">
+            {featured.data.source ?? 'MDGH'} · {fmt(featured.data.publishedAt)}
+          </p>
+          <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0 0 var(--space-4);line-height:1.2">{featured.data.title}</h2>
+          <p style="color:var(--color-text-2);font-size:var(--fs-body-l);line-height:1.6;margin:0">{featured.data.excerpt}</p>
+        </div>
+      </a>
+    )}
+
+    {rest.length > 0 && (
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-5);margin:var(--space-7) 0">
+        {rest.map((a) => (
+          <a
+            class="news-card"
+            href={linkFor(a)}
+            {...(isExternal(a) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            style="background:var(--color-bg-raised);border:1px solid var(--border-subtle);border-radius:var(--r-lg);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column"
+          >
+            <figure style="margin:0;background:linear-gradient(135deg,var(--color-deep-violet),var(--color-surface));aspect-ratio:5/3">
+              {a.data.coverImage && (
+                <img
+                  src={a.data.coverImage}
+                  alt={a.data.coverImageAlt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                  style="width:100%;height:100%;object-fit:cover;display:block"
+                />
+              )}
+            </figure>
+            <div style="padding:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);flex:1">
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.2em;text-transform:uppercase;color:var(--color-saffron);margin:0">
+                {a.data.source ?? 'MDGH'} · {fmt(a.data.publishedAt)}
+              </p>
+              <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:600;margin:0;line-height:1.3">{a.data.title}</h3>
+              <p style="color:var(--color-text-2);font-size:var(--fs-body);line-height:1.5;margin:0">{a.data.excerpt}</p>
+            </div>
+          </a>
+        ))}
+      </section>
+    )}
+  </article>
+</PageLayout>
+
+<style>
+  .news-featured {
+    transition: transform var(--dur-fast) var(--ease-emp);
+    will-change: transform;
+  }
+  .news-featured:hover,
+  .news-featured:focus-visible {
+    transform: translateY(-2px);
+  }
+  .news-card {
+    transition:
+      transform var(--dur-fast) var(--ease-emp),
+      border-color var(--dur-fast) var(--ease-std),
+      background var(--dur-fast) var(--ease-std);
+    will-change: transform;
+  }
+  .news-card:hover,
+  .news-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--color-saffron);
+    background: var(--color-deep-violet);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .news-featured {
+      transition: none;
+    }
+    .news-card {
+      transition:
+        border-color var(--dur-fast) var(--ease-std),
+        background var(--dur-fast) var(--ease-std);
+    }
+    .news-featured:hover,
+    .news-featured:focus-visible,
+    .news-card:hover,
+    .news-card:focus-visible {
+      transform: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .news-featured {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
