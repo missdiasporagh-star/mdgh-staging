@@ -60,6 +60,26 @@ const pages = defineCollection({
         }),
       )
       .optional(),
+    programsEyebrow: z.string().optional(),
+    programsHeading: z.string().optional(),
+    programs: z
+      .array(
+        z.object({
+          title: z.string(),
+          tagline: z.string().optional(),
+          image: z.string().optional(),
+          imageAlt: z.string().optional(),
+          description: z.string(),
+          cta: z
+            .object({
+              label: z.string(),
+              href: z.string(),
+              variant: z.enum(['primary', 'secondary', 'ghost']).default('primary'),
+            })
+            .optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 

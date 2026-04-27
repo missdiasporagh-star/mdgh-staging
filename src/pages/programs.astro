@@ -1,0 +1,113 @@
+---
+import PageLayout from '~/layouts/PageLayout.astro';
+import HeroStrip from '~/components/ui/HeroStrip.astro';
+import Button from '~/components/ui/Button.astro';
+import { getPage } from '~/lib/content/queries';
+
+const entry = await getPage('programs');
+if (!entry) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const { Content } = await entry.render();
+const data = entry.data;
+const hasPrograms = Array.isArray(data.programs) && data.programs.length > 0;
+---
+<PageLayout
+  title={data.seoTitle ?? data.title}
+  description={data.seoDescription ?? data.introduction}
+>
+  <article style="max-width:1200px;margin:var(--space-7) auto;padding:0 var(--space-5)">
+
+    <HeroStrip eyebrow={data.eyebrow ?? 'What we run'}>
+      {data.headline && (
+        <h1 style="font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:500;line-height:1.05;margin:var(--space-5) 0 var(--space-4);max-width:900px;position:relative;z-index:1">
+          {data.headline}
+        </h1>
+      )}
+      {data.introduction && (
+        <p style="color:var(--color-text-2);font-size:var(--fs-body-l);max-width:640px;line-height:1.6;position:relative;z-index:1">
+          {data.introduction}
+        </p>
+      )}
+    </HeroStrip>
+
+    {hasPrograms && (
+      <section style="margin:var(--space-9) 0">
+        {(data.programsEyebrow || data.programsHeading) && (
+          <header style="margin-bottom:var(--space-7)">
+            {data.programsEyebrow && (
+              <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{data.programsEyebrow}</p>
+            )}
+            {data.programsHeading && (
+              <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0;line-height:1.2">{data.programsHeading}</h2>
+            )}
+          </header>
+        )}
+        <div style="display:grid;gap:var(--space-9)">
+          {(data.programs ?? []).map((p, i) => (
+            <article class={`program-row ${i % 2 === 1 ? 'is-reverse' : ''}`}>
+              <figure class="program-row__figure">
+                {p.image && (
+                  <img
+                    src={p.image}
+                    alt={p.imageAlt ?? p.title}
+                    loading="lazy"
+                    decoding="async"
+                    onerror="this.style.display='none'"
+                  />
+                )}
+              </figure>
+              <div class="program-row__body">
+                {p.tagline && (
+                  <p style="font-family:var(--font-mono);font-size:var(--fs-meta);letter-spacing:0.25em;text-transform:uppercase;color:var(--color-saffron);margin:0 0 var(--space-2)">{p.tagline}</p>
+                )}
+                <h3 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0 0 var(--space-4);line-height:1.15">{p.title}</h3>
+                <p style="color:var(--color-text-2);font-size:var(--fs-body-l);line-height:1.6;margin:0 0 var(--space-5)">{p.description}</p>
+                {p.cta && (
+                  <Button variant={p.cta.variant ?? 'primary'} href={p.cta.href}>{p.cta.label}</Button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="prose" style="max-width:760px;margin:var(--space-7) auto">
+      <Content />
+    </section>
+  </article>
+</PageLayout>
+
+<style>
+  .program-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-7);
+    align-items: center;
+  }
+  .program-row__figure {
+    margin: 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-deep-violet), var(--color-surface));
+    border: 1px solid var(--border-subtle);
+    aspect-ratio: 5 / 4;
+  }
+  .program-row__figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .program-row.is-reverse > .program-row__figure { order: 2; }
+
+  @media (max-width: 768px) {
+    .program-row,
+    .program-row.is-reverse {
+      grid-template-columns: 1fr;
+    }
+    .program-row.is-reverse > .program-row__figure { order: 0; }
+  }
+</style>
