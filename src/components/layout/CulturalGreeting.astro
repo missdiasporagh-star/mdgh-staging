@@ -1,0 +1,81 @@
+---
+// Full content (image, audio, real text) wired via CMS data in M3.
+// This skeleton ships the structure + cookie gating + accessibility.
+---
+<div id="mdgh-greeting" class="mdgh-greet" hidden aria-hidden="true">
+  <button class="mdgh-greet__skip" type="button" aria-label="Skip greeting" data-greet-skip>Skip</button>
+  <div class="mdgh-greet__inner">
+    <p class="mdgh-greet__word">Akwaaba</p>
+    <p class="mdgh-greet__sub">Welcome home</p>
+  </div>
+</div>
+
+<style>
+  .mdgh-greet {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--color-obsidian);
+    display: grid; place-items: center;
+    opacity: 0;
+    transition: opacity var(--dur-page) var(--ease-emp);
+  }
+  .mdgh-greet.is-visible { opacity: 1; }
+  .mdgh-greet__skip {
+    position: absolute; top: 24px; right: 24px;
+    background: transparent; border: 1px solid var(--border-subtle);
+    color: var(--color-text-2); padding: 10px 18px; border-radius: var(--r-full);
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .mdgh-greet__word {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(64px, 12vw, 160px);
+    margin: 0;
+    background: linear-gradient(120deg, var(--color-bone), var(--color-saffron));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .mdgh-greet__sub {
+    color: var(--color-text-2);
+    text-align: center;
+    margin-top: 16px;
+    font-size: 18px;
+  }
+</style>
+
+<script>
+  const COOKIE = 'mdgh_greeted';
+  const COOKIE_DAYS = 365;
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function getCookie(name: string) {
+    return document.cookie.split('; ').find((c) => c.startsWith(name + '='))?.split('=')[1];
+  }
+  function setCookie(name: string, value: string, days: number) {
+    const exp = new Date(Date.now() + days * 24 * 3600 * 1000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${exp}; path=/; SameSite=Lax`;
+  }
+
+  function dismiss(el: HTMLElement) {
+    el.classList.remove('is-visible');
+    setTimeout(() => { el.hidden = true; document.body.style.overflow = ''; }, REDUCED ? 200 : 600);
+    setCookie(COOKIE, '1', COOKIE_DAYS);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (getCookie(COOKIE)) return;
+    const el = document.getElementById('mdgh-greeting');
+    if (!el) return;
+    el.hidden = false;
+    el.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => el.classList.add('is-visible'));
+
+    const dur = REDUCED ? 200 : 4000;
+    const timer = setTimeout(() => dismiss(el), dur);
+
+    el.querySelector<HTMLButtonElement>('[data-greet-skip]')?.addEventListener('click', () => {
+      clearTimeout(timer);
+      dismiss(el);
+    });
+  });
+</script>
