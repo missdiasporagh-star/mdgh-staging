@@ -1,0 +1,54 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel';
+  placeholder?: string;
+  required?: boolean;
+  autocomplete?: string;
+  value?: string;
+}
+const { name, label, type = 'text', placeholder, required, autocomplete, value } = Astro.props;
+const id = `field-${name}`;
+---
+<label class="mdgh-field">
+  <span class="mdgh-field__label">{label}{required && <span aria-hidden="true"> *</span>}</span>
+  <input
+    id={id}
+    name={name}
+    type={type}
+    placeholder={placeholder}
+    required={required}
+    autocomplete={autocomplete}
+    value={value}
+    class="mdgh-field__input"
+    aria-required={required}
+  />
+</label>
+
+<style>
+  .mdgh-field { display: flex; flex-direction: column; gap: 6px; }
+  .mdgh-field__label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+  }
+  .mdgh-field__input {
+    background: var(--color-obsidian);
+    border: 1px solid var(--border-subtle);
+    color: var(--color-text-1);
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    transition: border-color var(--dur-fast) var(--ease-std);
+  }
+  .mdgh-field__input::placeholder { color: var(--color-text-4); }
+  .mdgh-field__input:focus {
+    outline: 0;
+    border-color: var(--color-saffron);
+    box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.15);
+  }
+</style>
