@@ -1,0 +1,79 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  href?: string;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
+  fullWidth?: boolean;
+  ariaLabel?: string;
+}
+const { variant = 'primary', href, type = 'button', disabled, fullWidth, ariaLabel } = Astro.props;
+const Tag = href ? 'a' : 'button';
+const cls = [
+  'mdgh-btn',
+  `mdgh-btn--${variant}`,
+  fullWidth && 'mdgh-btn--full',
+  disabled && 'is-disabled',
+].filter(Boolean).join(' ');
+---
+<Tag
+  class={cls}
+  href={href}
+  type={!href ? type : undefined}
+  aria-disabled={disabled}
+  aria-label={ariaLabel}
+  tabindex={disabled ? -1 : 0}
+>
+  <slot />
+</Tag>
+
+<style>
+  .mdgh-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: var(--r-full);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border: 0;
+    text-decoration: none;
+    transition:
+      transform var(--dur-fast) var(--ease-emp),
+      box-shadow var(--dur-fast) var(--ease-emp),
+      background var(--dur-fast) var(--ease-std);
+    min-height: 44px;
+  }
+  .mdgh-btn:hover { transform: translateY(-1px); }
+  .mdgh-btn--full { width: 100%; }
+  .mdgh-btn.is-disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+  .mdgh-btn--primary {
+    background: linear-gradient(135deg, var(--color-saffron) 0%, #ffaa3d 100%);
+    color: var(--color-obsidian);
+    box-shadow: 0 4px 16px rgba(255, 209, 102, 0.35), 0 0 0 1px rgba(255, 209, 102, 0.4);
+  }
+  .mdgh-btn--primary:hover {
+    box-shadow: 0 8px 28px rgba(255, 209, 102, 0.5), 0 0 0 1px rgba(255, 209, 102, 0.6);
+  }
+
+  .mdgh-btn--secondary {
+    background: transparent;
+    color: var(--color-text-1);
+    border: 1px solid var(--color-royal-violet);
+  }
+  .mdgh-btn--secondary:hover {
+    background: rgba(107, 43, 217, 0.15);
+    border-color: var(--color-saffron);
+  }
+
+  .mdgh-btn--ghost {
+    background: transparent;
+    color: var(--color-rose);
+    padding: 14px 8px;
+  }
+</style>
