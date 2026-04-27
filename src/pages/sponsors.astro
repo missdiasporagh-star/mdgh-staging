@@ -86,11 +86,12 @@ const hasPartners = Array.isArray(data.partners) && data.partners.length > 0;
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--space-6);align-items:center">
           {(data.partners ?? []).map((p) => (
             <a
+              class="partner-card"
               href={p.url ?? '#'}
               target={p.url && p.url !== '#' ? '_blank' : undefined}
               rel={p.url && p.url !== '#' ? 'noopener' : undefined}
               aria-label={p.name}
-              style="display:flex;align-items:center;justify-content:center;padding:var(--space-5);background:rgba(255,255,255,0.06);border-radius:var(--r-md);min-height:120px;text-decoration:none;border:1px solid var(--border-subtle);transition:transform var(--dur-fast) var(--ease-emp),background var(--dur-fast) var(--ease-std)"
+              style="display:flex;align-items:center;justify-content:center;padding:var(--space-5);background:rgba(255,255,255,0.06);border-radius:var(--r-md);min-height:120px;text-decoration:none;border:1px solid var(--border-subtle)"
             >
               {p.logo && (
                 <img
@@ -107,6 +108,10 @@ const hasPartners = Array.isArray(data.partners) && data.partners.length > 0;
       </section>
     )}
 
+    <section class="prose" style="max-width:760px;margin:var(--space-7) auto">
+      <Content />
+    </section>
+
     {data.sponsorsCta && (
       <section style="margin:var(--space-9) 0;padding:var(--space-9) var(--space-7);background:linear-gradient(160deg,var(--color-deep-violet),var(--color-obsidian));border:1px solid var(--border-subtle);border-radius:var(--r-xl);text-align:center">
         <h2 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:500;margin:0 0 var(--space-4);line-height:1.2">{data.sponsorsCta.heading}</h2>
@@ -116,9 +121,23 @@ const hasPartners = Array.isArray(data.partners) && data.partners.length > 0;
         <Button variant="primary" href={`mailto:${data.sponsorsCta.email}`}>{data.sponsorsCta.buttonLabel}</Button>
       </section>
     )}
-
-    <section class="prose" style="max-width:760px;margin:var(--space-7) auto">
-      <Content />
-    </section>
   </article>
 </PageLayout>
+
+<style>
+  .partner-card {
+    transition: transform var(--dur-fast) var(--ease-emp), background var(--dur-fast) var(--ease-std), border-color var(--dur-fast) var(--ease-std);
+    will-change: transform;
+  }
+  .partner-card:hover,
+  .partner-card:focus-visible {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-saffron);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .partner-card { transition: background var(--dur-fast) var(--ease-std), border-color var(--dur-fast) var(--ease-std); }
+    .partner-card:hover,
+    .partner-card:focus-visible { transform: none; }
+  }
+</style>
