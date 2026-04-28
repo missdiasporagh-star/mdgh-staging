@@ -1,0 +1,73 @@
+---
+import Button from '~/components/ui/Button.astro';
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  body?: string;
+  cta?: { label?: string; href?: string; variant?: 'primary' | 'secondary' | 'ghost' };
+}
+
+const { eyebrow, headline, body, cta } = Astro.props;
+---
+
+<section id="mission" class="mdgh-mission" data-chapter="mission" aria-label="Mission">
+  <div class="mdgh-mission__inner">
+    {eyebrow && <p class="mdgh-mission__eyebrow">{eyebrow}</p>}
+    {headline && <h2 class="mdgh-mission__headline">{headline}</h2>}
+    {body && <p class="mdgh-mission__body">{body}</p>}
+    {cta?.label && cta?.href && (
+      <div class="mdgh-mission__cta">
+        <Button variant={cta.variant ?? 'secondary'} href={cta.href}>{cta.label}</Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .mdgh-mission {
+    min-height: 90vh;
+    display: grid;
+    place-items: center;
+    padding: var(--space-9) var(--space-6);
+    background:
+      radial-gradient(70% 60% at 30% 30%, rgba(107, 43, 217, 0.25), transparent 60%),
+      var(--color-bg-raised);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mdgh-mission__inner {
+    max-width: 980px;
+    text-align: center;
+  }
+
+  .mdgh-mission__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    margin: 0 0 var(--space-5);
+  }
+
+  .mdgh-mission__headline {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin: 0 0 var(--space-5);
+  }
+
+  .mdgh-mission__body {
+    color: var(--color-text-2);
+    font-size: clamp(18px, 2vw, 22px);
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .mdgh-mission__cta {
+    margin-top: var(--space-6);
+  }
+</style>
