@@ -1,0 +1,162 @@
+---
+import Button from '~/components/ui/Button.astro';
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  subline?: string;
+  bgVideoUrl?: string;
+  bgPosterImage?: string;
+  bgPosterImageAlt?: string;
+  cta?: { label?: string; href?: string; variant?: 'primary' | 'secondary' | 'ghost' };
+}
+
+const { eyebrow, headline, subline, bgVideoUrl, bgPosterImage, cta } = Astro.props;
+---
+
+<section class="mdgh-hero-chapter" data-chapter="hero" aria-label="Hero">
+  {bgVideoUrl && (
+    <video
+      class="mdgh-hero-chapter__bg"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={bgPosterImage || undefined}
+      aria-hidden="true"
+    >
+      <source src={bgVideoUrl} type="video/mp4" />
+    </video>
+  )}
+  <div class="mdgh-hero-chapter__overlay" aria-hidden="true"></div>
+
+  <div class="mdgh-hero-chapter__content">
+    {eyebrow && <p class="mdgh-hero-chapter__eyebrow">{eyebrow}</p>}
+    {headline && <h1 class="mdgh-hero-chapter__headline" data-reveal>{headline}</h1>}
+    {subline && <p class="mdgh-hero-chapter__subline" data-reveal data-reveal-delay="0.4">{subline}</p>}
+    {cta?.label && cta?.href && (
+      <div class="mdgh-hero-chapter__cta" data-reveal data-reveal-delay="0.6">
+        <Button variant={cta.variant ?? 'primary'} href={cta.href}>{cta.label}</Button>
+      </div>
+    )}
+  </div>
+
+  <a href="#mission" class="mdgh-hero-chapter__scroll" aria-label="Scroll to next chapter">
+    <span aria-hidden="true"></span>
+  </a>
+</section>
+
+<style>
+  .mdgh-hero-chapter {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .mdgh-hero-chapter__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+
+  .mdgh-hero-chapter__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 80% at 80% 20%, rgba(107, 43, 217, 0.5), transparent 60%),
+      linear-gradient(180deg, rgba(5, 1, 17, 0.4) 0%, rgba(5, 1, 17, 0.9) 100%);
+  }
+
+  .mdgh-hero-chapter__content {
+    text-align: center;
+    max-width: 1100px;
+    padding: var(--space-6);
+  }
+
+  .mdgh-hero-chapter__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    margin: 0 0 var(--space-5);
+  }
+
+  .mdgh-hero-chapter__headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(56px, 11vw, 160px);
+    font-weight: 400;
+    line-height: 1;
+    margin: 0 0 var(--space-5);
+    background: linear-gradient(120deg, var(--color-bone), var(--color-saffron) 50%, var(--color-rose));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .mdgh-hero-chapter__subline {
+    color: var(--color-text-2);
+    font-size: clamp(18px, 2vw, 22px);
+    max-width: 640px;
+    margin: 0 auto var(--space-6);
+  }
+
+  .mdgh-hero-chapter__scroll {
+    position: absolute;
+    bottom: var(--space-6);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 44px;
+    border: 1px solid var(--color-text-3);
+    border-radius: var(--r-full);
+    display: grid;
+    place-items: start center;
+  }
+
+  .mdgh-hero-chapter__scroll:focus-visible {
+    outline: 2px solid var(--color-saffron);
+    outline-offset: 4px;
+  }
+
+  .mdgh-hero-chapter__scroll span {
+    width: 3px;
+    height: 8px;
+    background: var(--color-saffron);
+    border-radius: var(--r-full);
+    margin-top: 8px;
+    animation: scroll-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes scroll-pulse {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(8px); }
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: hero-reveal 1.1s var(--ease-emp) forwards;
+  }
+  [data-reveal][data-reveal-delay="0.4"] { animation-delay: 0.4s; }
+  [data-reveal][data-reveal-delay="0.6"] { animation-delay: 0.6s; }
+
+  @keyframes hero-reveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { animation: none; opacity: 1; transform: none; }
+    .mdgh-hero-chapter__scroll span { animation: none; }
+    .mdgh-hero-chapter__bg { display: none; }
+  }
+</style>
