@@ -1,44 +1,145 @@
 ---
-// Full content (image, audio, real text) wired via CMS data in M3.
-// This skeleton ships the structure + cookie gating + accessibility.
+import { culturalGreeting as greet } from '~/data/culturalGreeting';
 ---
-<div id="mdgh-greeting" class="mdgh-greet" hidden aria-hidden="true">
-  <button class="mdgh-greet__skip" type="button" aria-label="Skip greeting" data-greet-skip>Skip</button>
-  <div class="mdgh-greet__inner">
-    <p class="mdgh-greet__word">Akwaaba</p>
-    <p class="mdgh-greet__sub">Welcome home</p>
+{greet.enabled && (
+  <div
+    id="mdgh-greeting"
+    class="mdgh-greet"
+    data-duration={greet.durationMs}
+    hidden
+    aria-hidden="true"
+    role="dialog"
+    aria-label="Welcome"
+  >
+    {greet.backgroundImage && (
+      <div
+        class="mdgh-greet__bg"
+        style={`background-image:url(${greet.backgroundImage})`}
+        aria-hidden="true"
+      ></div>
+    )}
+    <button
+      class="mdgh-greet__skip"
+      type="button"
+      aria-label="Skip greeting"
+      data-greet-skip
+    >
+      {greet.skipLabel}
+    </button>
+    <div class="mdgh-greet__inner">
+      <p class="mdgh-greet__word">{greet.word}</p>
+      <p class="mdgh-greet__sub">{greet.subtitle}</p>
+      {greet.audio && (
+        <button
+          class="mdgh-greet__audio"
+          type="button"
+          data-greet-audio
+          data-audio-url={greet.audio}
+          aria-label={greet.audioCaption}
+        >
+          <span class="mdgh-greet__audio-icon" aria-hidden="true">▶</span>
+          <span>{greet.audioCaption}</span>
+        </button>
+      )}
+    </div>
   </div>
-</div>
+)}
 
 <style>
   .mdgh-greet {
-    position: fixed; inset: 0; z-index: 100;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
     background: var(--color-obsidian);
-    display: grid; place-items: center;
+    display: grid;
+    place-items: center;
     opacity: 0;
+    overflow: hidden;
     transition: opacity var(--dur-page) var(--ease-emp);
   }
   .mdgh-greet.is-visible { opacity: 1; }
+
+  .mdgh-greet__bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    filter: saturate(1.1);
+  }
+  .mdgh-greet__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(5, 1, 17, 0.6) 0%,
+      rgba(5, 1, 17, 0.85) 100%
+    );
+  }
+
   .mdgh-greet__skip {
-    position: absolute; top: 24px; right: 24px;
-    background: transparent; border: 1px solid var(--border-subtle);
-    color: var(--color-text-2); padding: 10px 18px; border-radius: var(--r-full);
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-5);
+    z-index: 2;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--color-text-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     cursor: pointer;
   }
+
+  .mdgh-greet__inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 var(--space-5);
+  }
+
   .mdgh-greet__word {
     font-family: var(--font-display);
     font-style: italic;
     font-size: clamp(64px, 12vw, 160px);
     margin: 0;
     background: linear-gradient(120deg, var(--color-bone), var(--color-saffron));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .mdgh-greet__sub {
     color: var(--color-text-2);
     text-align: center;
-    margin-top: 16px;
-    font-size: 18px;
+    margin-top: var(--space-4);
+    font-size: var(--fs-body-l);
+  }
+
+  .mdgh-greet__audio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--color-saffron);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--r-full);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .mdgh-greet__audio-icon {
+    display: inline-block;
+    font-size: 10px;
+    line-height: 1;
   }
 </style>
 
@@ -70,12 +171,42 @@
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => el.classList.add('is-visible'));
 
-    const dur = REDUCED ? 200 : 4000;
-    const timer = setTimeout(() => dismiss(el), dur);
+    const configuredDuration = Number(el.dataset.duration);
+    const baseDuration = Number.isFinite(configuredDuration) && configuredDuration > 0
+      ? configuredDuration
+      : 4000;
+    const dur = REDUCED ? 200 : baseDuration;
+    let timer = window.setTimeout(() => dismiss(el), dur);
 
     el.querySelector<HTMLButtonElement>('[data-greet-skip]')?.addEventListener('click', () => {
-      clearTimeout(timer);
+      window.clearTimeout(timer);
       dismiss(el);
     });
+
+    const audioBtn = el.querySelector<HTMLButtonElement>('[data-greet-audio]');
+    if (audioBtn) {
+      audioBtn.addEventListener('click', () => {
+        const url = audioBtn.dataset.audioUrl;
+        if (!url) return;
+        window.clearTimeout(timer);
+        const audio = new Audio(url);
+        audio.play().catch(() => {
+          // Playback can fail (autoplay policy, missing file, etc.). Reschedule a short dismiss.
+          timer = window.setTimeout(() => dismiss(el), REDUCED ? 200 : 4000);
+        });
+        const scheduleDismissAfter = (ms: number) => {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(() => dismiss(el), ms);
+        };
+        audio.addEventListener('ended', () => {
+          const fallbackMs = (audio.duration && Number.isFinite(audio.duration))
+            ? Math.min(audio.duration * 1000, 10_000)
+            : 10_000;
+          scheduleDismissAfter(REDUCED ? 200 : fallbackMs);
+        });
+        // Safety net if 'ended' never fires.
+        scheduleDismissAfter(REDUCED ? 200 : 10_000);
+      });
+    }
   });
 </script>
