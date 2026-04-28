@@ -8,13 +8,12 @@ import { culturalGreeting as greet } from '~/data/culturalGreeting';
     data-duration={greet.durationMs}
     hidden
     aria-hidden="true"
-    role="dialog"
     aria-label="Welcome"
   >
     {greet.backgroundImage && (
       <div
         class="mdgh-greet__bg"
-        style={`background-image:url(${greet.backgroundImage})`}
+        style={`background-image:url("${encodeURI(greet.backgroundImage)}")`}
         aria-hidden="true"
       ></div>
     )}
@@ -136,6 +135,11 @@ import { culturalGreeting as greet } from '~/data/culturalGreeting';
     text-transform: uppercase;
     cursor: pointer;
   }
+  .mdgh-greet__skip:focus-visible,
+  .mdgh-greet__audio:focus-visible {
+    outline: 2px solid var(--color-saffron);
+    outline-offset: 2px;
+  }
   .mdgh-greet__audio-icon {
     display: inline-block;
     font-size: 10px;
@@ -188,24 +192,26 @@ import { culturalGreeting as greet } from '~/data/culturalGreeting';
       audioBtn.addEventListener('click', () => {
         const url = audioBtn.dataset.audioUrl;
         if (!url) return;
-        window.clearTimeout(timer);
-        const audio = new Audio(url);
-        audio.play().catch(() => {
-          // Playback can fail (autoplay policy, missing file, etc.). Reschedule a short dismiss.
-          timer = window.setTimeout(() => dismiss(el), REDUCED ? 200 : 4000);
-        });
+
         const scheduleDismissAfter = (ms: number) => {
           window.clearTimeout(timer);
           timer = window.setTimeout(() => dismiss(el), ms);
         };
-        audio.addEventListener('ended', () => {
-          const fallbackMs = (audio.duration && Number.isFinite(audio.duration))
-            ? Math.min(audio.duration * 1000, 10_000)
-            : 10_000;
-          scheduleDismissAfter(REDUCED ? 200 : fallbackMs);
-        });
-        // Safety net if 'ended' never fires.
+
+        // Switch from auto-dismiss timer to "audio in progress" mode.
+        // Safety net: if audio fails to load or 'ended' never fires, dismiss after 10s.
         scheduleDismissAfter(REDUCED ? 200 : 10_000);
+
+        const audio = new Audio(url);
+        audio.addEventListener('ended', () => {
+          // Audio finished — dismiss promptly (short pause for graceful close).
+          scheduleDismissAfter(REDUCED ? 200 : 600);
+        });
+        audio.play().catch(() => {
+          // Playback rejected (autoplay policy, missing file, decode error).
+          // Reschedule a short dismiss so user isn't stuck on the overlay.
+          scheduleDismissAfter(REDUCED ? 200 : 4000);
+        });
       });
     }
   });
