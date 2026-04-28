@@ -1,16 +1,45 @@
 ---
 import PageLayout from '~/layouts/PageLayout.astro';
+import HeroChapter from '~/components/home/HeroChapter.astro';
+import MissionChapter from '~/components/home/MissionChapter.astro';
+import CrownTeaserChapter from '~/components/home/CrownTeaserChapter.astro';
+import DiasporaTeaserChapter from '~/components/home/DiasporaTeaserChapter.astro';
+import CycleTeaserChapter from '~/components/home/CycleTeaserChapter.astro';
+import BecomeHerChapter from '~/components/home/BecomeHerChapter.astro';
+import ChapterRail from '~/components/home/ChapterRail';
+import { home } from '~/data/home';
+import { getAllQueens, getCurrentCycle, getContestantsByCycle, getAllCities } from '~/lib/content/queries';
+
+const [allQueens, currentCycle, allCities] = await Promise.all([
+  getAllQueens().catch(() => []),
+  getCurrentCycle().catch(() => undefined),
+  getAllCities().catch(() => []),
+]);
+
+const currentContestants = currentCycle ? await getContestantsByCycle(currentCycle.id).catch(() => []) : [];
+
+const queens = allQueens.map((q) => ({
+  id: q.id,
+  name: q.data.name,
+  heroImage: q.data.heroImage,
+  year: q.data.year,
+  crownNumber: q.data.crownNumber,
+}));
+
+const contestants = currentContestants.map((c) => ({
+  id: c.id,
+  name: c.data.name,
+  slug: c.id,
+  region: c.data.region,
+  heroImage: c.data.heroImage,
+}));
 ---
-<PageLayout title="Home">
-  <section style="min-height: 80vh; display: grid; place-items: center; padding: 32px;">
-    <div style="text-align: center; max-width: 720px;">
-      <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: .25em; color: var(--color-saffron); text-transform: uppercase;">
-        MDGH Platform · Foundation
-      </p>
-      <h1 style="font-family: var(--font-display); font-size: clamp(48px, 8vw, 96px); font-weight: 500; font-style: italic; margin: 24px 0 16px; background: linear-gradient(120deg, var(--color-bone), var(--color-saffron) 60%, var(--color-rose)); -webkit-background-clip: text; background-clip: text; color: transparent;">
-        She wears the future.
-      </h1>
-      <p style="color: var(--color-text-2); font-size: 18px;">Staging environment. Build in progress.</p>
-    </div>
-  </section>
+<PageLayout title={home.seoTitle} description={home.seoDescription}>
+  <HeroChapter {...home.hero} />
+  <MissionChapter {...home.mission} />
+  <CrownTeaserChapter {...home.crownTeaser} queens={queens} />
+  <DiasporaTeaserChapter {...home.diasporaTeaser} cityCount={allCities.length} />
+  <CycleTeaserChapter {...home.cycleTeaser} contestants={contestants} />
+  <BecomeHerChapter {...home.becomeHer} />
+  <ChapterRail client:idle />
 </PageLayout>

@@ -19,6 +19,11 @@ export async function getCycle(slug: string) {
   return getEntry('cycles', slug);
 }
 
+export async function getCurrentCycle() {
+  const all = await getCollection('cycles');
+  return all.find((c) => c.data.status === 'current');
+}
+
 // Contestants
 export async function getAllContestants() {
   return getCollection('contestants');
