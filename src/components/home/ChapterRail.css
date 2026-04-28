@@ -1,0 +1,53 @@
+.mdgh-chapter-rail {
+  position: fixed;
+  right: var(--space-5);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.mdgh-chapter-rail__dot {
+  width: 16px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  display: block;
+  pointer-events: auto;
+  transition:
+    width var(--dur-base) var(--ease-emp),
+    background var(--dur-base) var(--ease-emp);
+  text-decoration: none;
+}
+
+.mdgh-chapter-rail__dot:hover,
+.mdgh-chapter-rail__dot:focus-visible {
+  background: rgba(255, 255, 255, 0.4);
+  outline: none;
+  width: 24px;
+}
+
+.mdgh-chapter-rail__dot:focus-visible {
+  outline: 2px solid var(--color-saffron);
+  outline-offset: 2px;
+}
+
+.mdgh-chapter-rail__dot.is-active {
+  width: 32px;
+  background: var(--color-saffron);
+}
+
+@media (max-width: 768px) {
+  .mdgh-chapter-rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdgh-chapter-rail__dot {
+    transition: none;
+  }
+}
