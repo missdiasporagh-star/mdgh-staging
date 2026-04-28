@@ -1,0 +1,177 @@
+---
+import Button from '~/components/ui/Button.astro';
+
+type ContestantSummary = {
+  id: string;
+  name?: string;
+  slug?: string;
+  region?: string;
+  heroImage?: string;
+};
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  body?: string;
+  cta?: { label?: string; href?: string; variant?: 'primary' | 'secondary' | 'ghost' };
+  contestants?: ContestantSummary[];
+}
+
+const { eyebrow, headline, body, cta, contestants = [] } = Astro.props;
+const visibleContestants = contestants.slice(0, 3);
+---
+
+<section class="mdgh-cycle-teaser" data-chapter="cycle" aria-label="This cycle">
+  <div class="mdgh-cycle-teaser__head">
+    {eyebrow && <p class="mdgh-cycle-teaser__eyebrow">{eyebrow}</p>}
+    {headline && <h2 class="mdgh-cycle-teaser__headline">{headline}</h2>}
+    {body && <p class="mdgh-cycle-teaser__body">{body}</p>}
+  </div>
+
+  {visibleContestants.length > 0 && (
+    <ul class="mdgh-cycle-teaser__grid" role="list">
+      {visibleContestants.map((c) => (
+        <li>
+          <a href={c.slug ? `/contestants/${c.slug}` : '/contestants'} class="mdgh-cycle-teaser__card">
+            {c.heroImage && <img src={c.heroImage} alt={c.name ?? ''} loading="lazy" decoding="async" />}
+            <div class="mdgh-cycle-teaser__overlay">
+              <h3>{c.name}</h3>
+              {c.region && <span>{c.region}</span>}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {cta?.label && cta?.href && (
+    <div class="mdgh-cycle-teaser__cta">
+      <Button variant={cta.variant ?? 'secondary'} href={cta.href}>{cta.label}</Button>
+    </div>
+  )}
+</section>
+
+<style>
+  .mdgh-cycle-teaser {
+    min-height: 90vh;
+    padding: var(--space-9) var(--space-6);
+    background: linear-gradient(180deg, var(--color-obsidian), var(--color-deep-violet));
+  }
+
+  .mdgh-cycle-teaser__head {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .mdgh-cycle-teaser__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    margin: 0 0 var(--space-4);
+  }
+
+  .mdgh-cycle-teaser__headline {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin: 0 0 var(--space-4);
+  }
+
+  .mdgh-cycle-teaser__body {
+    color: var(--color-text-2);
+    font-size: var(--fs-body-l);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .mdgh-cycle-teaser__grid {
+    max-width: 1200px;
+    margin: var(--space-7) auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    list-style: none;
+    padding: 0;
+  }
+
+  .mdgh-cycle-teaser__grid li {
+    margin: 0;
+  }
+
+  .mdgh-cycle-teaser__card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    aspect-ratio: 3 / 4;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .mdgh-cycle-teaser__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-page) var(--ease-emp);
+  }
+
+  .mdgh-cycle-teaser__card:hover img,
+  .mdgh-cycle-teaser__card:focus-visible img {
+    transform: scale(1.04);
+  }
+
+  .mdgh-cycle-teaser__card:focus-visible {
+    outline: 2px solid var(--color-saffron);
+    outline-offset: 4px;
+  }
+
+  .mdgh-cycle-teaser__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(5, 1, 17, 0.9) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding: var(--space-5);
+  }
+
+  .mdgh-cycle-teaser__overlay h3 {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .mdgh-cycle-teaser__overlay span {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.2em;
+    color: var(--color-saffron);
+    text-transform: uppercase;
+  }
+
+  .mdgh-cycle-teaser__cta {
+    text-align: center;
+    margin-top: var(--space-7);
+  }
+
+  @media (max-width: 768px) {
+    .mdgh-cycle-teaser__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mdgh-cycle-teaser__card img {
+      transition: none;
+    }
+    .mdgh-cycle-teaser__card:hover img,
+    .mdgh-cycle-teaser__card:focus-visible img {
+      transform: none;
+    }
+  }
+</style>

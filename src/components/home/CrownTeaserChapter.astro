@@ -1,0 +1,149 @@
+---
+import Button from '~/components/ui/Button.astro';
+
+type QueenSummary = {
+  id: string;
+  name?: string;
+  heroImage?: string;
+  year?: number;
+  crownNumber?: number;
+};
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  body?: string;
+  cta?: { label?: string; href?: string; variant?: 'primary' | 'secondary' | 'ghost' };
+  queens?: QueenSummary[];
+}
+
+const { eyebrow, headline, body, cta, queens = [] } = Astro.props;
+const visibleQueens = queens.slice(0, 8);
+---
+
+<section class="mdgh-crown-teaser" data-chapter="crown" aria-label="The crown">
+  <div class="mdgh-crown-teaser__head">
+    {eyebrow && <p class="mdgh-crown-teaser__eyebrow">{eyebrow}</p>}
+    {headline && <h2 class="mdgh-crown-teaser__headline">{headline}</h2>}
+    {body && <p class="mdgh-crown-teaser__body">{body}</p>}
+  </div>
+
+  {visibleQueens.length > 0 && (
+    <ul class="mdgh-crown-teaser__rail" role="list">
+      {visibleQueens.map((q) => (
+        <li class="mdgh-crown-teaser__card">
+          {q.heroImage && <img src={q.heroImage} alt={q.name ?? ''} loading="lazy" decoding="async" />}
+          <div class="mdgh-crown-teaser__cardmeta">
+            <span class="mdgh-crown-teaser__num">№ {q.crownNumber ?? '—'}</span>
+            <h3>{q.name}</h3>
+            <span class="mdgh-crown-teaser__year">{q.year}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {cta?.label && cta?.href && (
+    <div class="mdgh-crown-teaser__cta">
+      <Button variant={cta.variant ?? 'secondary'} href={cta.href}>{cta.label}</Button>
+    </div>
+  )}
+</section>
+
+<style>
+  .mdgh-crown-teaser {
+    min-height: 90vh;
+    padding: var(--space-9) var(--space-6);
+    background: linear-gradient(180deg, var(--color-deep-violet) 0%, var(--color-obsidian) 100%);
+  }
+
+  .mdgh-crown-teaser__head {
+    max-width: 1200px;
+    margin: 0 auto var(--space-7);
+    text-align: left;
+  }
+
+  .mdgh-crown-teaser__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-saffron);
+    margin: 0 0 var(--space-4);
+  }
+
+  .mdgh-crown-teaser__headline {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1.1;
+    margin: 0 0 var(--space-4);
+  }
+
+  .mdgh-crown-teaser__body {
+    color: var(--color-text-2);
+    font-size: var(--fs-body-l);
+    max-width: 720px;
+    margin: 0;
+  }
+
+  .mdgh-crown-teaser__rail {
+    display: flex;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: var(--space-2) 0 var(--space-5);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+
+  .mdgh-crown-teaser__card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+  }
+
+  .mdgh-crown-teaser__card img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+
+  .mdgh-crown-teaser__cardmeta {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .mdgh-crown-teaser__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.25em;
+    color: var(--color-saffron);
+    text-transform: uppercase;
+  }
+
+  .mdgh-crown-teaser__cardmeta h3 {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .mdgh-crown-teaser__year {
+    color: var(--color-text-3);
+    font-size: var(--fs-meta);
+  }
+
+  .mdgh-crown-teaser__cta {
+    text-align: center;
+    margin-top: var(--space-6);
+  }
+</style>
