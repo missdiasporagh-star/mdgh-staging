@@ -12,10 +12,10 @@ test.describe('TopNav', () => {
     if (await skip.isVisible().catch(() => false)) await skip.click();
 
     const nav = page.getByRole('navigation', { name: 'Primary' });
-    for (const label of ['Story', 'Heritage', 'Contestants', 'For Sponsors', 'Press']) {
+    for (const label of ['Story', 'About', 'Programs', 'For Sponsors', 'Press']) {
       await expect(nav.getByRole('link', { name: label })).toBeVisible();
     }
-    await expect(page.getByRole('link', { name: 'Apply', exact: true }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Contact', exact: true }).first()).toBeVisible();
   });
 
   test('mobile hamburger opens panel', async ({ page, browserName }) => {
@@ -26,6 +26,6 @@ test.describe('TopNav', () => {
     if (await skip.isVisible().catch(() => false)) await skip.click();
 
     await page.getByRole('button', { name: /open menu/i }).click();
-    await expect(page.getByRole('link', { name: 'Apply for Crown' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Get in touch' })).toBeVisible();
   });
 });
