@@ -1,0 +1,55 @@
+---
+interface Props {
+  /** Size in pixels. Computed elsewhere as `8 + activity * 2`, capped at 18. */
+  size?: number;
+  /** Whether this marker is the currently-active city */
+  active?: boolean;
+  /** Opacity at idle. Auto-set to 1.0 if active. */
+  opacity?: number;
+  /** City name — used for hover tooltip / accessible label */
+  name?: string;
+}
+
+const { size = 10, active = false, opacity = 1, name } = Astro.props;
+
+const effectiveOpacity = active ? 1 : Math.max(0.3, Math.min(1, opacity));
+const filter = active
+  ? 'drop-shadow(0 0 12px rgba(255, 209, 102, 1))'
+  : `drop-shadow(0 0 ${Math.round(size / 2)}px rgba(255, 209, 102, 0.5))`;
+---
+<span
+  class={`city-marker${active ? ' is-active' : ''}`}
+  style={`--size: ${size}px; --opacity: ${effectiveOpacity}; --filter: ${filter}`}
+  title={name}
+  aria-label={name}
+></span>
+
+<style>
+  .city-marker {
+    display: inline-block;
+    width: var(--size, 10px);
+    height: var(--size, 10px);
+    background: var(--color-saffron, #FFD166);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    opacity: var(--opacity, 1);
+    filter: var(--filter, drop-shadow(0 0 6px rgba(255, 209, 102, 0.5)));
+    transition: transform 200ms cubic-bezier(.4, 0, .2, 1), opacity 200ms cubic-bezier(.4, 0, .2, 1);
+    will-change: transform;
+  }
+  .city-marker.is-active {
+    transform: scale(1.4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .city-marker:not(.is-active) {
+      animation: twinkle 2s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: var(--opacity, 1); }
+      to { opacity: calc(var(--opacity, 1) * 0.6); }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .city-marker { transition: none; }
+    .city-marker.is-active { transform: none; }
+  }
+</style>
