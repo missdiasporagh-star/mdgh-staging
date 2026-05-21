@@ -69,6 +69,11 @@
   --dur-base: 300ms;
   --dur-page: 600ms;
   --dur-hero: 1100ms;
+
+  /* Phase 2 (Diaspora) — bottom drawer surface for city detail view */
+  --color-drawer-surface-1: rgba(10, 4, 20, 0.95);
+  --color-drawer-surface-2: #050111;
+  --color-drawer-border: rgba(255, 209, 102, 0.25);
 }
 
 @media (prefers-reduced-motion: reduce) {
