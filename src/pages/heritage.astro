@@ -33,10 +33,15 @@ const queenBios = await Promise.all(
     Content: (await q.render()).Content,
   }))
 );
+
+// First card's portrait is the LCP candidate — preload it from <head>
+// so it isn't blocked by render-blocking CSS/font chains.
+const lcpImage = queens[0]?.photo;
 ---
 <PageLayout
   title="Crown Heritage · Miss Diaspora Ghana"
   description="Every Miss Diaspora Ghana since the first cycle — their work, their cities, their continuing story."
+  preloadImage={lcpImage}
 >
   <div class="heritage-page">
     <header class="heritage-page__header">

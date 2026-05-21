@@ -8,10 +8,12 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  /** Optional LCP image to preload from <head> */
+  preloadImage?: string;
 }
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, preloadImage } = Astro.props;
 ---
-<BaseLayout title={title} description={description} ogImage={ogImage}>
+<BaseLayout title={title} description={description} ogImage={ogImage} preloadImage={preloadImage}>
   <CulturalGreeting />
   <TopNav />
   <main id="main"><slot /></main>

@@ -12,9 +12,11 @@ interface Props {
   photoAlt: string;           // value of `heroImageAlt` field
   /** Card index in the timeline, for stagger animation */
   index?: number;
+  /** Prioritise this card's portrait (LCP candidate — eager + fetchpriority=high) */
+  priority?: boolean;
 }
 
-const { slug, name, crownNumber, year, city, photo, photoAlt, index = 0 } = Astro.props;
+const { slug, name, crownNumber, year, city, photo, photoAlt, index = 0, priority = false } = Astro.props;
 
 // Convert numeric crown number to Roman numeral for display
 function toRoman(num: number): string {
@@ -48,7 +50,13 @@ const lastName = rest.join(' ');
   style={`--stagger: ${index * 40}ms`}
 >
   <div class="queen-card__media">
-    <Portrait src={photo} alt={photoAlt} aspect="3 / 4" />
+    <Portrait
+      src={photo}
+      alt={photoAlt}
+      aspect="3 / 4"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
+    />
   </div>
   <div class="queen-card__meta">
     <MetaLabel text={`${year} · CROWN ${roman}`} tone="accent" as="time" datetime={String(year)} />
