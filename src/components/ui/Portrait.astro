@@ -1,0 +1,64 @@
+---
+interface Props {
+  src: string;
+  alt: string;                                  // REQUIRED — never optional
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  fit?: 'cover' | 'contain';
+  /** Aspect ratio as a CSS aspect-ratio value, e.g. "3 / 4" */
+  aspect?: string;
+  /** Disable the film-grain overlay (for thumbnails / non-portrait usage) */
+  plain?: boolean;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  fit = 'cover',
+  aspect = '3 / 4',
+  plain = false,
+} = Astro.props;
+---
+<figure class="portrait" style={`aspect-ratio: ${aspect}`}>
+  <img
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding="async"
+    style={`object-fit: ${fit}`}
+  />
+  {!plain && <span class="portrait__grain" aria-hidden="true" />}
+</figure>
+
+<style>
+  .portrait {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--color-deep-violet, #1A0833);
+  }
+  .portrait img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .portrait__grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    background-image:
+      radial-gradient(rgba(0,0,0,1) 1px, transparent 1px),
+      radial-gradient(rgba(0,0,0,1) 1px, transparent 1px);
+    background-size: 3px 3px, 4px 4px;
+    background-position: 0 0, 1px 2px;
+  }
+</style>
