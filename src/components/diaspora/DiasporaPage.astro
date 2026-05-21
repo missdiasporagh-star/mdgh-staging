@@ -1,0 +1,89 @@
+---
+import DiasporaFallback from './DiasporaFallback.astro';
+import DiasporaGlobe from './DiasporaGlobe.tsx';
+import CityDrawer from './CityDrawer.astro';
+
+interface City {
+  slug: string;
+  name: string;
+  country: string;
+  lat: number;
+  lng: number;
+  heroImage?: string;
+  heroImageAlt?: string;
+  relatedQueens: string[];
+  relatedContestants: string[];
+  queensCount: number;
+  contestantsCount: number;
+  activity: number;
+}
+
+interface Props {
+  cities: City[];
+}
+
+const { cities } = Astro.props;
+---
+<div class="diaspora-page-content">
+
+  <!-- 3D globe shown only when client passes the gate (set by inline script below) -->
+  <div class="diaspora-page__globe-slot" data-diaspora-globe-slot hidden>
+    <DiasporaGlobe cities={cities} client:visible />
+  </div>
+
+  <!-- Static fallback shown by default and on mobile / reduced-motion -->
+  <div class="diaspora-page__fallback-slot" data-diaspora-fallback-slot>
+    <DiasporaFallback cities={cities} />
+  </div>
+
+  <!-- The drawer is rendered once and reused by both globe + fallback -->
+  <CityDrawer cities={cities} />
+</div>
+
+<script>
+  // Decide which surface to show:
+  // - 3D globe: viewport ≥ 768px AND prefers-reduced-motion: no-preference AND WebGL supported
+  // - Static fallback: everything else
+  function gate(): boolean {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    if (window.matchMedia('(max-width: 767px)').matches) return false;
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) return false;
+    return true;
+  }
+
+  const globeSlot = document.querySelector<HTMLElement>('[data-diaspora-globe-slot]');
+  const fallbackSlot = document.querySelector<HTMLElement>('[data-diaspora-fallback-slot]');
+
+  if (gate() && globeSlot && fallbackSlot) {
+    globeSlot.hidden = false;
+    fallbackSlot.hidden = true;
+  }
+
+  // Re-evaluate on resize crossing the 768px threshold
+  let wasGated = gate();
+  window.addEventListener('resize', () => {
+    const isGated = gate();
+    if (isGated === wasGated) return;
+    wasGated = isGated;
+    if (globeSlot && fallbackSlot) {
+      globeSlot.hidden = !isGated;
+      fallbackSlot.hidden = isGated;
+    }
+  });
+</script>
+
+<style>
+  .diaspora-page-content {
+    width: 100%;
+  }
+  .diaspora-page__globe-slot {
+    display: flex;
+    justify-content: center;
+    padding: 24px 24px 48px;
+  }
+  .diaspora-page__fallback-slot {
+    padding: 24px 0 48px;
+  }
+</style>
