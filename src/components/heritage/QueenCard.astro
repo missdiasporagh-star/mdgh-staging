@@ -1,0 +1,123 @@
+---
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import Portrait from '~/components/ui/Portrait.astro';
+
+interface Props {
+  slug: string;
+  name: string;
+  crownNumber: number;        // schema uses number, not string
+  year: number;
+  city?: string;              // optional per schema (currentCity is optional)
+  photo: string;              // value of `heroImage` field
+  photoAlt: string;           // value of `heroImageAlt` field
+  /** Card index in the timeline, for stagger animation */
+  index?: number;
+  /** Prioritise this card's portrait (LCP candidate — eager + fetchpriority=high) */
+  priority?: boolean;
+}
+
+const { slug, name, crownNumber, year, city, photo, photoAlt, index = 0, priority = false } = Astro.props;
+
+// Convert numeric crown number to Roman numeral for display
+function toRoman(num: number): string {
+  if (num < 1) return String(num);
+  const romans: Array<[number, string]> = [
+    [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+    [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I'],
+  ];
+  let n = num;
+  let out = '';
+  for (const [val, sym] of romans) {
+    while (n >= val) { out += sym; n -= val; }
+  }
+  return out;
+}
+
+const roman = toRoman(crownNumber);
+
+// Split name on first space for "First / Last" italic-stack layout
+const [firstName, ...rest] = name.split(' ');
+const lastName = rest.join(' ');
+---
+<article
+  class="queen-card"
+  data-slug={slug}
+  data-index={index}
+  tabindex="0"
+  role="button"
+  aria-label={`Open profile for ${name}, Crown ${roman}, ${year}`}
+  style={`--stagger: ${index * 40}ms`}
+>
+  <div class="queen-card__media">
+    <Portrait
+      src={photo}
+      alt={photoAlt}
+      aspect="3 / 4"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
+    />
+  </div>
+  <div class="queen-card__meta">
+    <MetaLabel text={`${year} · CROWN ${roman}`} tone="accent" as="time" datetime={String(year)} />
+  </div>
+  <div class="queen-card__name">
+    <span class="queen-card__first">{firstName}</span>
+    {lastName && <span class="queen-card__last">{lastName}</span>}
+  </div>
+  {city && <div class="queen-card__city">{city}</div>}
+</article>
+
+<style>
+  .queen-card {
+    flex: 0 0 320px;
+    scroll-snap-align: center;
+    background: linear-gradient(180deg, var(--color-deep-violet, #1a0833), var(--color-obsidian, #050111));
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid rgba(107, 43, 217, 0.25);
+    cursor: pointer;
+    transition: transform 200ms cubic-bezier(.4,0,.2,1), border-color 200ms cubic-bezier(.4,0,.2,1);
+    transition-delay: var(--stagger, 0ms);
+    will-change: transform;
+  }
+  .queen-card:hover,
+  .queen-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgba(255, 126, 179, 0.55);
+    outline: none;
+  }
+  .queen-card:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-saffron, #FFD166);
+  }
+  .queen-card__media {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .queen-card__meta { margin-top: 8px; }
+  .queen-card__name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .queen-card__city {
+    opacity: 0.55;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .queen-card { transition: none; }
+    .queen-card:hover,
+    .queen-card:focus-visible { transform: none; }
+  }
+</style>

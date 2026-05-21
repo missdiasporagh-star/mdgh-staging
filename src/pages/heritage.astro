@@ -1,0 +1,117 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import HeritageTimeline from '~/components/heritage/HeritageTimeline.astro';
+import QueenModal from '~/components/heritage/QueenModal.astro';
+
+const queenEntries = await getCollection('queens');
+
+// Sort by year ascending (oldest crown first, newest at the end of the timeline)
+queenEntries.sort((a, b) => a.data.year - b.data.year);
+
+// Map schema field names → component prop names
+const queens = queenEntries.map((q) => ({
+  slug: q.slug,
+  name: q.data.name,
+  crownNumber: q.data.crownNumber,
+  year: q.data.year,
+  eraTheme: q.data.eraTheme,
+  city: q.data.currentCity,
+  role: q.data.currentRole,
+  photo: q.data.heroImage,
+  photoAlt: q.data.heroImageAlt,
+  achievements: q.data.achievements,
+}));
+
+// Pre-render each queen's MDX body into a Content component for the bio prose.
+// The QueenModal's JS clones <div data-queen-bio="<slug>"> on open to fill the
+// modal body's bio slot.
+const queenBios = await Promise.all(
+  queenEntries.map(async (q) => ({
+    slug: q.slug,
+    Content: (await q.render()).Content,
+  }))
+);
+
+// First card's portrait is the LCP candidate — preload it from <head>
+// so it isn't blocked by render-blocking CSS/font chains.
+const lcpImage = queens[0]?.photo;
+---
+<PageLayout
+  title="Crown Heritage · Miss Diaspora Ghana"
+  description="Every Miss Diaspora Ghana since the first cycle — their work, their cities, their continuing story."
+  preloadImage={lcpImage}
+>
+  <div class="heritage-page">
+    <header class="heritage-page__header">
+      <MetaLabel text="The crown · since 2019" tone="accent" />
+      <h1 class="heritage-page__title">
+        Twenty-six queens.<br />
+        <em class="heritage-page__italic">One legacy.</em>
+      </h1>
+      <p class="heritage-page__lede">
+        Every Miss Diaspora Ghana since the first cycle — their work, their cities, the continuing story they carry across borders.
+      </p>
+    </header>
+
+    {queens.length === 0 ? (
+      <p class="heritage-page__empty">Queens coming soon.</p>
+    ) : (
+      <HeritageTimeline queens={queens} />
+    )}
+
+    <QueenModal queens={queens} />
+
+    {/* Hidden bio sources — QueenModal's open() handler clones these. */}
+    <div class="heritage-page__bios" aria-hidden="true">
+      {queenBios.map(({ slug, Content }) => (
+        <div data-queen-bio={slug}>
+          <Content />
+        </div>
+      ))}
+    </div>
+  </div>
+</PageLayout>
+
+<style>
+  .heritage-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 120px 24px 64px;
+  }
+  .heritage-page__header {
+    max-width: 720px;
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .heritage-page__title {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.05;
+    margin: 0;
+    color: #fff;
+  }
+  .heritage-page__italic {
+    font-style: italic;
+    color: var(--color-saffron, #FFD166);
+  }
+  .heritage-page__lede {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+  .heritage-page__empty {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 64px 24px;
+    text-align: center;
+  }
+  /* Hidden bio sources — display: none so the modal can clone the inner HTML */
+  .heritage-page__bios {
+    display: none;
+  }
+</style>

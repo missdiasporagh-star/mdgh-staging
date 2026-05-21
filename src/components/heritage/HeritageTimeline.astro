@@ -1,0 +1,144 @@
+---
+import QueenCard from './QueenCard.astro';
+
+interface Queen {
+  slug: string;
+  name: string;
+  crownNumber: number;        // schema uses number, not string
+  year: number;
+  city?: string;
+  photo: string;
+  photoAlt: string;
+}
+
+interface Props {
+  queens: Queen[];
+}
+
+const { queens } = Astro.props;
+---
+<div class="heritage-timeline" role="region" aria-label="Crown Heritage Timeline" data-heritage-timeline>
+  <div class="heritage-timeline__hint" aria-hidden="true">
+    <span>← Arrow keys · trackpad · swipe →</span>
+  </div>
+  <div class="heritage-timeline__rail" tabindex="0" data-heritage-rail>
+    {queens.map((q, i) => (
+      <QueenCard
+        slug={q.slug}
+        name={q.name}
+        crownNumber={q.crownNumber}
+        year={q.year}
+        city={q.city}
+        photo={q.photo}
+        photoAlt={q.photoAlt}
+        index={i}
+        priority={i === 0}
+      />
+    ))}
+  </div>
+</div>
+
+<script>
+  // Keyboard nav for the timeline rail
+  const rail = document.querySelector<HTMLElement>('[data-heritage-rail]');
+  if (rail) {
+    rail.addEventListener('keydown', (e) => {
+      const cards = Array.from(rail.querySelectorAll<HTMLElement>('.queen-card'));
+      if (cards.length === 0) return;
+      const current = document.activeElement as HTMLElement | null;
+      const idx = current ? cards.indexOf(current) : -1;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = cards[Math.min(idx + 1, cards.length - 1)] ?? cards[0];
+        next.focus();
+        next.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = cards[Math.max(idx - 1, 0)] ?? cards[0];
+        prev.focus();
+        prev.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        cards[0]?.focus();
+        cards[0]?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        cards[cards.length - 1]?.focus();
+        cards[cards.length - 1]?.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' });
+      }
+    });
+  }
+
+  // IntersectionObserver — mark active card as `data-active="true"` when in center
+  const rail2 = document.querySelector<HTMLElement>('[data-heritage-rail]');
+  if (rail2 && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const el = e.target as HTMLElement;
+          if (e.intersectionRatio > 0.6) el.dataset.active = 'true';
+          else delete el.dataset.active;
+        });
+      },
+      { root: rail2, threshold: [0.6] }
+    );
+    rail2.querySelectorAll('.queen-card').forEach((c) => obs.observe(c));
+  }
+</script>
+
+<style>
+  .heritage-timeline {
+    position: relative;
+    width: 100%;
+  }
+  .heritage-timeline__hint {
+    position: absolute;
+    top: -28px;
+    right: 24px;
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+  }
+  .heritage-timeline__rail {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 24px;
+    scroll-padding-inline: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-royal-violet, #6B2BD9) transparent;
+  }
+  .heritage-timeline__rail::-webkit-scrollbar { height: 6px; }
+  .heritage-timeline__rail::-webkit-scrollbar-thumb {
+    background: var(--color-royal-violet, #6B2BD9);
+    border-radius: 999px;
+  }
+  .heritage-timeline__rail:focus-visible {
+    outline: 2px solid var(--color-saffron, #FFD166);
+    outline-offset: 4px;
+    border-radius: 12px;
+  }
+
+  /* Mobile (<768px) — vertical stack fallback */
+  @media (max-width: 767px) {
+    .heritage-timeline__rail {
+      flex-direction: column;
+      overflow-x: hidden;
+      scroll-snap-type: none;
+      padding: 16px;
+    }
+    .heritage-timeline__hint { display: none; }
+  }
+
+  /* Reduced motion — disable scroll-snap and any timeline-driven motion */
+  @media (prefers-reduced-motion: reduce) {
+    .heritage-timeline__rail {
+      scroll-snap-type: none;
+      scroll-behavior: auto;
+    }
+  }
+</style>

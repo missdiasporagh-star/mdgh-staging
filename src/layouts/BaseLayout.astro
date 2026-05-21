@@ -6,8 +6,10 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  /** Optional LCP image to preload from <head> (e.g. "/queens/yvonne_kofigah.jpg") */
+  preloadImage?: string;
 }
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, preloadImage } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,6 +19,9 @@ const { title, description, ogImage } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#050111" />
+    {preloadImage && (
+      <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
+    )}
     <SeoHead title={title} description={description} ogImage={ogImage} />
   </head>
   <body>
