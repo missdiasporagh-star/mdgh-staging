@@ -28,7 +28,7 @@ const { cities } = Astro.props;
 
   <!-- 3D globe shown only when client passes the gate (set by inline script below) -->
   <div class="diaspora-page__globe-slot" data-diaspora-globe-slot hidden>
-    <DiasporaGlobe cities={cities} client:only="react" />
+    <DiasporaGlobe cities={cities} client:visible />
   </div>
 
   <!-- Static fallback shown by default and on mobile / reduced-motion -->
@@ -82,8 +82,11 @@ const { cities } = Astro.props;
     display: flex;
     justify-content: center;
     padding: 24px 24px 48px;
+    /* Reserve the globe's height even when hidden — avoids CLS on desktop
+       when the gate flips this from hidden to visible. The DiasporaGlobe
+       component is 560px high regardless of hydration state (it renders a
+       placeholder until react-globe.gl finishes dynamic-importing). */
+    min-height: 608px;
   }
-  .diaspora-page__fallback-slot {
-    padding: 24px 0 48px;
-  }
+  /* Fallback slot has no min-height — its content (SVG aspect-ratio-locked + city list) is its own height. Adding a fixed reserve makes the page taller than needed on small viewports. */
 </style>
