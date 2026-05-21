@@ -1,0 +1,253 @@
+---
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import Portrait from '~/components/ui/Portrait.astro';
+
+interface Queen {
+  slug: string;
+  name: string;
+  crownNumber: number;       // schema uses number
+  year: number;
+  eraTheme?: string;
+  city?: string;
+  role?: string;
+  photo: string;
+  photoAlt: string;
+  achievements?: string[];
+}
+
+interface Props {
+  queens: Queen[];
+}
+
+const { queens } = Astro.props;
+
+// Convert numeric crown number to Roman numeral for display
+function toRoman(num: number): string {
+  if (num < 1) return String(num);
+  const romans: Array<[number, string]> = [
+    [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+    [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
+    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I'],
+  ];
+  let n = num;
+  let out = '';
+  for (const [val, sym] of romans) {
+    while (n >= val) { out += sym; n -= val; }
+  }
+  return out;
+}
+---
+<dialog class="queen-modal" data-queen-modal aria-modal="true" aria-labelledby="queen-modal-title">
+  <div class="queen-modal__scrim" data-queen-modal-scrim></div>
+  <article class="queen-modal__card" role="document">
+    <button type="button" class="queen-modal__close" data-queen-modal-close aria-label="Close queen profile">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Modal body filled by JS from the matching <template> + bio div on click -->
+    <div class="queen-modal__body" data-queen-modal-body></div>
+  </article>
+
+  <!-- One <template> per queen — frontmatter only. Bio comes from sibling <div data-queen-bio>. -->
+  {queens.map((q) => {
+    const roman = toRoman(q.crownNumber);
+    const eraSuffix = q.eraTheme ? ` · ${q.eraTheme.toUpperCase()}` : '';
+    return (
+      <template data-queen-template={q.slug}>
+        <div class="queen-modal__layout">
+          <div class="queen-modal__portrait">
+            <Portrait src={q.photo} alt={q.photoAlt} aspect="3 / 4" loading="eager" />
+          </div>
+          <div class="queen-modal__content">
+            <MetaLabel text={`${q.year} · CROWN ${roman}${eraSuffix}`} tone="accent" />
+            <h2 id="queen-modal-title" class="queen-modal__name">{q.name}</h2>
+            {(q.city || q.role) && (
+              <p class="queen-modal__city">
+                {q.city}
+                {q.city && q.role && ' · '}
+                {q.role}
+              </p>
+            )}
+            <div class="queen-modal__bio" data-queen-modal-bio-slot></div>
+            {q.achievements && q.achievements.length > 0 && (
+              <ul class="queen-modal__achievements">
+                {q.achievements.map((a) => <li>{a}</li>)}
+              </ul>
+            )}
+          </div>
+        </div>
+      </template>
+    );
+  })}
+</dialog>
+
+<script>
+  const modal = document.querySelector<HTMLDialogElement>('[data-queen-modal]');
+  const body = document.querySelector<HTMLElement>('[data-queen-modal-body]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-queen-modal-close]');
+  const scrim = document.querySelector<HTMLElement>('[data-queen-modal-scrim]');
+
+  let lastFocused: HTMLElement | null = null;
+
+  function openModal(slug: string) {
+    if (!modal || !body) return;
+    const tpl = document.querySelector<HTMLTemplateElement>(`template[data-queen-template="${slug}"]`);
+    if (!tpl) return;
+    body.replaceChildren(tpl.content.cloneNode(true));
+
+    // After cloning the frontmatter template, try to inject the bio prose
+    // (rendered by the page into <div data-queen-bio="<slug>"> hidden siblings of the modal).
+    const bioSource = document.querySelector<HTMLElement>(`[data-queen-bio="${slug}"]`);
+    const bioSlot = body.querySelector<HTMLElement>('[data-queen-modal-bio-slot]');
+    if (bioSource && bioSlot) {
+      bioSlot.innerHTML = bioSource.innerHTML;
+    }
+
+    lastFocused = document.activeElement as HTMLElement;
+    modal.showModal();
+    requestAnimationFrame(() => modal.classList.add('is-open'));
+    // Move initial focus to the close button so keyboard users can immediately exit
+    closeBtn?.focus();
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    setTimeout(() => {
+      modal.close();
+      lastFocused?.focus();
+    }, 200);
+  }
+
+  document.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.queen-card');
+    if (!card) return;
+    const slug = card.dataset.slug;
+    if (slug) openModal(slug);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.queen-card');
+    if (!card) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const slug = card.dataset.slug;
+      if (slug) openModal(slug);
+    }
+  });
+
+  closeBtn?.addEventListener('click', closeModal);
+  scrim?.addEventListener('click', closeModal);
+  modal?.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeModal();
+  });
+</script>
+
+<style>
+  .queen-modal {
+    border: none;
+    background: transparent;
+    padding: 0;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+  }
+  .queen-modal::backdrop { background: rgba(5, 1, 17, 0.85); backdrop-filter: blur(8px); }
+  .queen-modal__scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 1, 17, 0.55);
+    backdrop-filter: blur(6px);
+  }
+  .queen-modal__card {
+    position: relative;
+    margin: 5vh auto;
+    max-width: 960px;
+    width: calc(100% - 32px);
+    background: linear-gradient(180deg, #1a0833, #0a0414);
+    border: 1px solid rgba(255, 209, 102, 0.2);
+    border-radius: 20px;
+    padding: 32px;
+    color: #fff;
+    transform: scale(0.96);
+    opacity: 0;
+    transition: transform 280ms cubic-bezier(.2,.7,.1,1), opacity 280ms cubic-bezier(.2,.7,.1,1);
+  }
+  .queen-modal.is-open .queen-modal__card {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .queen-modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    color: var(--color-saffron, #FFD166);
+    border: 1px solid rgba(255, 209, 102, 0.3);
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 200ms;
+  }
+  .queen-modal__close:hover,
+  .queen-modal__close:focus-visible {
+    background: rgba(255, 209, 102, 0.12);
+    outline: 2px solid var(--color-saffron, #FFD166);
+    outline-offset: 2px;
+  }
+  .queen-modal__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .queen-modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .queen-modal__name {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 72px);
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.03em;
+  }
+  .queen-modal__city { opacity: 0.7; }
+  .queen-modal__bio { line-height: 1.7; }
+  .queen-modal__bio :global(p) { margin: 0 0 1em; }
+  .queen-modal__achievements {
+    margin-top: 8px;
+    padding-left: 1.25em;
+    line-height: 1.7;
+  }
+  @media (max-width: 767px) {
+    .queen-modal__layout {
+      grid-template-columns: 1fr;
+    }
+    .queen-modal__card {
+      padding: 20px;
+      margin: 2vh 8px;
+      max-height: 96vh;
+      overflow-y: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .queen-modal__card {
+      transition: opacity 200ms linear;
+      transform: none;
+    }
+    .queen-modal.is-open .queen-modal__card { transform: none; }
+  }
+</style>
