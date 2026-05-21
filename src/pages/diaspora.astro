@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import DiasporaPage from '~/components/diaspora/DiasporaPage.astro';
+
+const cityEntries = await getCollection('cities');
+
+// Sort by activity descending so the most active cities render first in the list
+const cityRows = cityEntries.map((c) => ({
+  entry: c,
+  queensCount: c.data.relatedQueens.length,
+  contestantsCount: c.data.relatedContestants.length,
+}));
+cityRows.sort((a, b) => (b.queensCount + b.contestantsCount) - (a.queensCount + a.contestantsCount));
+
+const cities = cityRows.map(({ entry, queensCount, contestantsCount }) => ({
+  slug: entry.slug,
+  name: entry.data.name,
+  country: entry.data.country,
+  lat: entry.data.lat,
+  lng: entry.data.lng,
+  heroImage: entry.data.heroImage,
+  heroImageAlt: entry.data.heroImageAlt,
+  relatedQueens: entry.data.relatedQueens,
+  relatedContestants: entry.data.relatedContestants,
+  queensCount,
+  contestantsCount,
+  activity: queensCount + contestantsCount,
+}));
+
+// Pre-render MDX bios into hidden divs for the drawer (same pattern as Phase 1's /heritage)
+const cityBios = await Promise.all(
+  cityEntries.map(async (c) => ({
+    slug: c.slug,
+    Content: (await c.render()).Content,
+  }))
+);
+---
+<PageLayout
+  title="The Diaspora · A globe of Ghanaian daughters"
+  description="From Accra to Atlanta, London to Toronto — every star is a city, every city is a story."
+>
+  <div class="diaspora-page">
+    <header class="diaspora-page__header">
+      <MetaLabel text="The diaspora · a living atlas" tone="accent" />
+      <h1 class="diaspora-page__title">
+        A globe of <em class="diaspora-page__italic">Ghanaian daughters.</em>
+      </h1>
+      <p class="diaspora-page__lede">
+        From Accra to Atlanta, London to Toronto — every star is a city, every city is a story. Click to enter.
+      </p>
+    </header>
+
+    {cities.length === 0 ? (
+      <p class="diaspora-page__empty">Cities coming soon.</p>
+    ) : (
+      <DiasporaPage cities={cities} />
+    )}
+
+    <div class="diaspora-page__bios" aria-hidden="true">
+      {cityBios.map(({ slug, Content }) => (
+        <div data-city-bio={slug}>
+          <Content />
+        </div>
+      ))}
+    </div>
+  </div>
+</PageLayout>
+
+<style>
+  .diaspora-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 120px 24px 64px;
+  }
+  .diaspora-page__header {
+    max-width: 720px;
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .diaspora-page__title {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.05;
+    margin: 0;
+    color: #fff;
+  }
+  .diaspora-page__italic {
+    font-style: italic;
+    color: var(--color-saffron, #FFD166);
+  }
+  .diaspora-page__lede {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+  .diaspora-page__empty {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .diaspora-page__bios { display: none; }
+</style>
