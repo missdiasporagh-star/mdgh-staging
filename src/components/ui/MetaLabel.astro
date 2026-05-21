@@ -1,0 +1,36 @@
+---
+interface Props {
+  /** The text content. Will be rendered uppercase. */
+  text: string;
+  /** Optional color token override; defaults to muted text */
+  tone?: 'muted' | 'accent' | 'royal' | 'rose';
+  /** Optional HTML element override; defaults to <span> */
+  as?: 'span' | 'p' | 'div' | 'time';
+  /** Optional datetime attribute if `as="time"` */
+  datetime?: string;
+}
+
+const { text, tone = 'muted', as = 'span', datetime } = Astro.props;
+
+const toneColor = {
+  muted: 'rgba(255, 255, 255, 0.55)',
+  accent: 'var(--color-saffron, #FFD166)',
+  royal: 'var(--color-royal-violet, #6B2BD9)',
+  rose: 'var(--color-rose, #FF7EB3)',
+}[tone];
+
+const Tag = as;
+---
+<Tag class="meta-label" style={`color: ${toneColor}`} {...(datetime ? { datetime } : {})}>{text}</Tag>
+
+<style>
+  .meta-label {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    display: inline-block;
+  }
+</style>
