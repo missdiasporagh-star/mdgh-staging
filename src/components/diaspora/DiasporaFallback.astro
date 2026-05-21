@@ -1,0 +1,179 @@
+---
+import CityMarker from '~/components/ui/CityMarker.astro';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+
+interface City {
+  slug: string;
+  name: string;
+  country: string;
+  lat: number;
+  lng: number;
+  activity: number;        // queensCount + contestantsCount
+  queensCount: number;
+  contestantsCount: number;
+}
+
+interface Props {
+  cities: City[];
+}
+
+const { cities } = Astro.props;
+
+// Project lat/lng to SVG viewBox coordinates (720x320 — equirectangular)
+function project(lat: number, lng: number): { x: number; y: number } {
+  // viewBox is 720 wide × 320 tall, lng -180..180 → 0..720, lat 90..-90 → 0..320
+  const x = ((lng + 180) / 360) * 720;
+  const y = ((90 - lat) / 180) * 320;
+  return { x, y };
+}
+
+const maxActivity = Math.max(1, ...cities.map((c) => c.activity));
+---
+<section class="diaspora-fallback" aria-label="Diaspora cities map and list">
+  <!-- Static SVG world map with city markers -->
+  <div class="diaspora-fallback__map" aria-hidden="true">
+    <svg viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet" class="diaspora-fallback__svg">
+      <g class="diaspora-fallback__continents" opacity="0.35">
+        <path d="M100 60 L150 50 L180 80 L170 140 L130 200 L100 210 L80 180 L70 130 Z" fill="rgba(107,43,217,0.35)" stroke="rgba(255,209,102,0.3)" stroke-width="0.8"/>
+        <path d="M340 90 L390 90 L420 130 L410 200 L370 240 L340 220 L320 170 L325 120 Z" fill="rgba(107,43,217,0.35)" stroke="rgba(255,209,102,0.3)" stroke-width="0.8"/>
+        <path d="M340 50 L420 50 L440 85 L400 95 L360 90 L335 70 Z" fill="rgba(107,43,217,0.35)" stroke="rgba(255,209,102,0.3)" stroke-width="0.8"/>
+        <path d="M450 50 L600 50 L640 90 L630 150 L560 170 L470 140 L440 100 Z" fill="rgba(107,43,217,0.35)" stroke="rgba(255,209,102,0.3)" stroke-width="0.8"/>
+        <path d="M560 220 L640 215 L660 245 L620 260 L570 250 Z" fill="rgba(107,43,217,0.35)" stroke="rgba(255,209,102,0.3)" stroke-width="0.8"/>
+      </g>
+    </svg>
+
+    {cities.map((c) => {
+      const { x, y } = project(c.lat, c.lng);
+      const xPct = (x / 720) * 100;
+      const yPct = (y / 320) * 100;
+      const size = Math.min(18, 8 + c.activity * 2);
+      const opacity = 0.5 + (c.activity / maxActivity) * 0.5;
+      return (
+        <button
+          class="diaspora-fallback__marker-btn"
+          data-city-trigger={c.slug}
+          aria-label={`Open ${c.name}, ${c.country}`}
+          style={`left: ${xPct}%; top: ${yPct}%`}
+        >
+          <CityMarker size={size} opacity={opacity} name={c.name} />
+        </button>
+      );
+    })}
+  </div>
+
+  <div class="diaspora-fallback__list-wrap">
+    <MetaLabel text="Or tap a city" tone="muted" />
+    <ul class="diaspora-fallback__list" role="list">
+      {cities.map((c) => (
+        <li>
+          <button class="diaspora-fallback__list-item" data-city-trigger={c.slug}>
+            <span class="diaspora-fallback__list-name">
+              <span class="diaspora-fallback__list-italic">{c.name}</span>
+              <span class="diaspora-fallback__list-country">· {c.country}</span>
+            </span>
+            <span class="diaspora-fallback__list-meta">
+              {c.queensCount}Q · {c.contestantsCount}C
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .diaspora-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .diaspora-fallback__map {
+    position: relative;
+    background: #0a0414;
+    border: 1px solid rgba(255, 209, 102, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    aspect-ratio: 720 / 320;
+    max-height: 360px;
+  }
+  .diaspora-fallback__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .diaspora-fallback__marker-btn {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border: 2px solid transparent;
+    padding: 4px;
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 0;
+  }
+  .diaspora-fallback__marker-btn:hover,
+  .diaspora-fallback__marker-btn:focus-visible {
+    border-color: rgba(255, 209, 102, 0.4);
+    outline: none;
+  }
+  .diaspora-fallback__marker-btn:focus-visible {
+    border-color: var(--color-saffron, #FFD166);
+  }
+
+  .diaspora-fallback__list-wrap { display: flex; flex-direction: column; gap: 12px; }
+  .diaspora-fallback__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .diaspora-fallback__list-item {
+    width: 100%;
+    background: linear-gradient(180deg, #1a0833, #050111);
+    border: 1px solid rgba(107, 43, 217, 0.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 200ms cubic-bezier(.4, 0, .2, 1), background 200ms cubic-bezier(.4, 0, .2, 1);
+    font-family: 'Inter Variable', 'Inter', sans-serif;
+  }
+  .diaspora-fallback__list-item:hover,
+  .diaspora-fallback__list-item:focus-visible {
+    border-color: rgba(255, 209, 102, 0.5);
+    outline: none;
+  }
+  .diaspora-fallback__list-item:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-saffron, #FFD166);
+  }
+  .diaspora-fallback__list-italic {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+  }
+  .diaspora-fallback__list-country {
+    opacity: 0.55;
+    font-size: 13px;
+    margin-left: 6px;
+  }
+  .diaspora-fallback__list-meta {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-saffron, #FFD166);
+    letter-spacing: 0.2em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .diaspora-fallback__list-item { transition: none; }
+  }
+</style>
