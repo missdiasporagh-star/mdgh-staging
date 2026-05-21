@@ -28,7 +28,7 @@ const { cities } = Astro.props;
 
   <!-- 3D globe shown only when client passes the gate (set by inline script below) -->
   <div class="diaspora-page__globe-slot" data-diaspora-globe-slot hidden>
-    <DiasporaGlobe cities={cities} client:visible />
+    <DiasporaGlobe cities={cities} client:only="react" />
   </div>
 
   <!-- Static fallback shown by default and on mobile / reduced-motion -->
