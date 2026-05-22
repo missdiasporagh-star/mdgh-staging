@@ -7,6 +7,7 @@ const chapters = [
   { id: 'crown', label: 'The Crown' },
   { id: 'diaspora', label: 'Diaspora' },
   { id: 'cycle', label: 'Cycle' },
+  { id: 'quiz', label: 'Quiz' },
   { id: 'become', label: 'Become Her' },
 ] as const;
 

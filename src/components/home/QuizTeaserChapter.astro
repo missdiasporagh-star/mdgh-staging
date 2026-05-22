@@ -1,0 +1,173 @@
+---
+import { getCollection } from 'astro:content';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+
+interface Props {
+  /** Optional override; defaults to internal content */
+  eyebrow?: string;
+}
+
+const { eyebrow = 'CHAPTER VI · HERITAGE QUIZ' } = Astro.props;
+
+const results = await getCollection('quiz-results');
+const archetypes = results
+  .map((r) => ({
+    region: r.data.region,
+    archetypeName: r.data.archetypeName,
+    accentHex: r.data.accentHex,
+  }))
+  .sort((a, b) => a.region.localeCompare(b.region));
+---
+<section class="quiz-teaser" data-chapter="quiz">
+  <div class="quiz-teaser__inner">
+    <div class="quiz-teaser__copy">
+      <MetaLabel text={eyebrow} tone="accent" />
+      <h2 class="quiz-teaser__title">
+        Which Ghana <em>are you?</em>
+      </h2>
+      <p class="quiz-teaser__lede">
+        Six questions. One archetype. The region of Ghana whose spirit lives loudest in you. Takes ninety seconds.
+      </p>
+      <a class="quiz-teaser__cta" href="/quiz">Take the quiz →</a>
+    </div>
+    <div class="quiz-teaser__tiles" aria-label="The seven regional archetypes">
+      <div class="quiz-teaser__tiles-eyebrow">YOU MIGHT BE…</div>
+      <div class="quiz-teaser__grid">
+        {archetypes.map((a) => (
+          <a
+            href={`/quiz/result/${a.region.toLowerCase().replace(/\s+/g, '-')}`}
+            class="quiz-teaser__tile"
+            style={`--accent: ${a.accentHex}`}
+          >
+            <div class="quiz-teaser__tile-region">{a.region}</div>
+            <div class="quiz-teaser__tile-archetype">{a.archetypeName.replace(/^The /, '').toUpperCase()}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quiz-teaser {
+    min-height: 80vh;
+    background: radial-gradient(ellipse at 70% 50%, var(--color-deep-violet, #1a0833) 0%, var(--color-obsidian, #050111) 90%);
+    padding: 96px 48px;
+    position: relative;
+    overflow: hidden;
+    scroll-snap-align: start;
+  }
+  .quiz-teaser::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+    width: 720px;
+    height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 126, 179, 0.06) 0%, rgba(107, 43, 217, 0.03) 50%, transparent 80%);
+    pointer-events: none;
+  }
+  .quiz-teaser__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .quiz-teaser__copy { display: flex; flex-direction: column; gap: 18px; }
+  .quiz-teaser__title {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .quiz-teaser__title em { font-style: italic; color: var(--color-saffron, #FFD166); }
+  .quiz-teaser__lede {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    line-height: 1.55;
+    max-width: 46ch;
+    margin: 0;
+  }
+  .quiz-teaser__cta {
+    align-self: flex-start;
+    margin-top: 14px;
+    background: var(--color-saffron, #FFD166);
+    color: var(--color-deep-violet, #1a0833);
+    border: none;
+    padding: 14px 36px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(255, 209, 102, 0.25);
+    transition: transform 200ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .quiz-teaser__cta:hover, .quiz-teaser__cta:focus-visible {
+    transform: translateY(-2px);
+    outline: 2px solid var(--color-saffron, #FFD166);
+    outline-offset: 4px;
+  }
+  .quiz-teaser__tiles { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-teaser__tiles-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .quiz-teaser__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .quiz-teaser__tile {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: #fff;
+    transition: transform 200ms cubic-bezier(.4, 0, .2, 1), border-color 200ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .quiz-teaser__tile:hover, .quiz-teaser__tile:focus-visible {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+    outline: none;
+  }
+  .quiz-teaser__tile-region {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: #fff;
+  }
+  .quiz-teaser__tile-archetype {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+  @media (max-width: 767px) {
+    .quiz-teaser { padding: 64px 20px; }
+    .quiz-teaser__inner { grid-template-columns: 1fr; gap: 32px; }
+    .quiz-teaser__lede { font-size: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .quiz-teaser__cta, .quiz-teaser__tile { transition: none; }
+    .quiz-teaser__cta:hover, .quiz-teaser__tile:hover { transform: none; }
+  }
+</style>

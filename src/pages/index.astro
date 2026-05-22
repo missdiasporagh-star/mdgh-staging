@@ -5,6 +5,7 @@ import MissionChapter from '~/components/home/MissionChapter.astro';
 import CrownTeaserChapter from '~/components/home/CrownTeaserChapter.astro';
 import DiasporaTeaserChapter from '~/components/home/DiasporaTeaserChapter.astro';
 import CycleTeaserChapter from '~/components/home/CycleTeaserChapter.astro';
+import QuizTeaserChapter from '~/components/home/QuizTeaserChapter.astro';
 import BecomeHerChapter from '~/components/home/BecomeHerChapter.astro';
 import ChapterRail from '~/components/home/ChapterRail';
 import { home } from '~/data/home';
@@ -40,6 +41,7 @@ const contestants = currentContestants.map((c) => ({
   <CrownTeaserChapter {...home.crownTeaser} queens={queens} />
   <DiasporaTeaserChapter {...home.diasporaTeaser} cityCount={allCities.length} />
   <CycleTeaserChapter {...home.cycleTeaser} contestants={contestants} />
+  <QuizTeaserChapter />
   <BecomeHerChapter {...home.becomeHer} />
   <ChapterRail client:idle />
 </PageLayout>

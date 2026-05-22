@@ -1,4 +1,11 @@
 @import 'tailwindcss';
+
+/* Phase 5 T1 custom @font-face block reverted — the declarations targeted
+ * /fonts/*.woff2 files but had NO unicode-range, so the @fontsource imports
+ * below (which DO have matching unicode-range subsets) won the cascade and
+ * loaded their own woff2 files. The custom block was dead-weight that paired
+ * with preload links to download ~150KB of unused fonts on every route. */
+
 @import '@fontsource-variable/fraunces';
 @import '@fontsource-variable/inter';
 @import '@fontsource/jetbrains-mono/400.css';

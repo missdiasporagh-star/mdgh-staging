@@ -19,6 +19,13 @@ const { title, description, ogImage, preloadImage } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#050111" />
+
+    {/* Phase 5 T1 font preload reverted — the preloaded /fonts/*.woff2 files were
+        shadowed by @fontsource declarations with matching unicode-range, so the
+        preloads loaded ~150KB of unused fonts that regressed LCP across all
+        routes by ~1000ms. The @fontsource imports in global.css handle font
+        loading correctly via subsetted variants. */}
+
     {preloadImage && (
       <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
     )}

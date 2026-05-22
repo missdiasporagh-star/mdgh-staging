@@ -15,7 +15,13 @@ const { eyebrow, headline, body, cta } = Astro.props;
   <div class="mdgh-mission__inner">
     {eyebrow && <p class="mdgh-mission__eyebrow">{eyebrow}</p>}
     {headline && <h2 class="mdgh-mission__headline">{headline}</h2>}
-    {body && <p class="mdgh-mission__body">{body}</p>}
+    {body && (
+      <blockquote class="mission-chapter__quote">
+        <span class="mission-chapter__divider" aria-hidden="true"></span>
+        <p class="mission-chapter__statement mdgh-mission__body">{body}</p>
+        <span class="mission-chapter__divider" aria-hidden="true"></span>
+      </blockquote>
+    )}
     {cta?.label && cta?.href && (
       <div class="mdgh-mission__cta">
         <Button variant={cta.variant ?? 'secondary'} href={cta.href}>{cta.label}</Button>
@@ -65,6 +71,30 @@ const { eyebrow, headline, body, cta } = Astro.props;
     line-height: 1.6;
     max-width: 720px;
     margin: 0 auto;
+  }
+
+  .mission-chapter__quote {
+    margin: 0 auto;
+    max-width: 56ch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+  }
+  .mission-chapter__divider {
+    width: 48px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-saffron, #FFD166), transparent);
+  }
+  .mission-chapter__statement {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(22px, 3vw, 32px);
+    line-height: 1.4;
+    color: #fff;
+    margin: 0;
   }
 
   .mdgh-mission__cta {
