@@ -1,22 +1,24 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 import PageLayout from '~/layouts/PageLayout.astro';
 import MetaLabel from '~/components/ui/MetaLabel.astro';
 import ContestantHero from '~/components/contestants/ContestantHero.astro';
 import CharityPanel from '~/components/contestants/CharityPanel.astro';
 import GalleryRow from '~/components/contestants/GalleryRow.astro';
 
-export const prerender = true;
+// SSR pattern (server-rendered on demand) — avoids the Astro Cloudflare
+// adapter's prerender + _routes.json mismatch where prerendered
+// contestants/<slug>/index.html files exist but Cloudflare routes
+// /contestants/<slug> (no trailing slash) through the Worker, which 404s
+// for static-only routes. Resolving the entry server-side keeps every
+// detail URL working under `trailingSlash: 'never'`.
 
-export async function getStaticPaths() {
-  const contestants = await getCollection('contestants');
-  return contestants.map((c) => ({
-    params: { slug: c.slug },
-    props: { entry: c },
-  }));
-}
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/contestants');
 
-const { entry } = Astro.props;
+const entry = await getEntry('contestants', slug);
+if (!entry) return Astro.redirect('/contestants');
+
 const { Content } = await entry.render();
 
 const cycle = await getEntry(entry.data.cycle);
