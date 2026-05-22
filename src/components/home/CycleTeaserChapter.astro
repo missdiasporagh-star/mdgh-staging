@@ -1,5 +1,7 @@
 ---
+import { getCollection } from 'astro:content';
 import Button from '~/components/ui/Button.astro';
+import ContestantCard from '~/components/contestants/ContestantCard.astro';
 
 type ContestantSummary = {
   id: string;
@@ -14,11 +16,27 @@ interface Props {
   headline?: string;
   body?: string;
   cta?: { label?: string; href?: string; variant?: 'primary' | 'secondary' | 'ghost' };
+  /** Backwards-compatible slim prop from index.astro — not used for rendering;
+   *  the chapter re-fetches the full collection so ContestantCard receives all required fields. */
   contestants?: ContestantSummary[];
 }
 
-const { eyebrow, headline, body, cta, contestants = [] } = Astro.props;
-const visibleContestants = contestants.slice(0, 3);
+const { eyebrow, headline, body, cta } = Astro.props;
+
+// Load current cycle + full contestant entries so ContestantCard has every field it needs.
+const cycles = await getCollection('cycles');
+const currentCycle = cycles.find((c) => c.data.status === 'current');
+const cycleCrown = currentCycle?.data.crownNumber ?? '';
+
+const allContestants = currentCycle ? await getCollection('contestants') : [];
+const top3 = allContestants
+  .filter((c) => c.data.cycle.id === currentCycle?.id)
+  .sort(
+    (a, b) =>
+      (a.data.sortOrder ?? 0) - (b.data.sortOrder ?? 0) ||
+      a.data.name.localeCompare(b.data.name),
+  )
+  .slice(0, 3);
 ---
 
 <section class="mdgh-cycle-teaser" data-chapter="cycle" aria-label="This cycle">
@@ -28,20 +46,22 @@ const visibleContestants = contestants.slice(0, 3);
     {body && <p class="mdgh-cycle-teaser__body">{body}</p>}
   </div>
 
-  {visibleContestants.length > 0 && (
-    <ul class="mdgh-cycle-teaser__grid" role="list">
-      {visibleContestants.map((c) => (
-        <li>
-          <a href={c.slug ? `/contestants/${c.slug}` : '/contestants'} class="mdgh-cycle-teaser__card">
-            {c.heroImage && <img src={c.heroImage} alt={c.name ?? ''} loading="lazy" decoding="async" />}
-            <div class="mdgh-cycle-teaser__overlay">
-              <h3>{c.name}</h3>
-              {c.region && <span>{c.region}</span>}
-            </div>
-          </a>
-        </li>
+  {top3.length > 0 && (
+    <div class="cycle-teaser__mini-grid">
+      {top3.map((c, i) => (
+        <ContestantCard
+          slug={c.slug ?? c.id}
+          name={c.data.name}
+          sashNumber={c.data.sashNumber}
+          sortOrder={c.data.sortOrder}
+          region={c.data.region}
+          cycleCrown={cycleCrown}
+          heroImage={c.data.heroImage}
+          heroImageAlt={c.data.heroImageAlt ?? `${c.data.name}, Crown ${cycleCrown} contestant`}
+          index={i}
+        />
       ))}
-    </ul>
+    </div>
   )}
 
   {cta?.label && cta?.href && (
@@ -88,90 +108,23 @@ const visibleContestants = contestants.slice(0, 3);
     margin: 0 auto;
   }
 
-  .mdgh-cycle-teaser__grid {
-    max-width: 1200px;
-    margin: var(--space-7) auto 0;
+  .cycle-teaser__mini-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
-    list-style: none;
-    padding: 0;
+    gap: 14px;
+    max-width: 560px;
+    margin: 24px auto 0;
   }
 
-  .mdgh-cycle-teaser__grid li {
-    margin: 0;
-  }
-
-  .mdgh-cycle-teaser__card {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--r-lg);
-    aspect-ratio: 3 / 4;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-  }
-
-  .mdgh-cycle-teaser__card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--dur-page) var(--ease-emp);
-  }
-
-  .mdgh-cycle-teaser__card:hover img,
-  .mdgh-cycle-teaser__card:focus-visible img {
-    transform: scale(1.04);
-  }
-
-  .mdgh-cycle-teaser__card:focus-visible {
-    outline: 2px solid var(--color-saffron);
-    outline-offset: 4px;
-  }
-
-  .mdgh-cycle-teaser__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(5, 1, 17, 0.9) 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-    padding: var(--space-5);
-  }
-
-  .mdgh-cycle-teaser__overlay h3 {
-    font-family: var(--font-display);
-    font-size: var(--fs-h3);
-    font-weight: 500;
-    margin: 0;
-  }
-
-  .mdgh-cycle-teaser__overlay span {
-    font-family: var(--font-mono);
-    font-size: var(--fs-meta);
-    letter-spacing: 0.2em;
-    color: var(--color-saffron);
-    text-transform: uppercase;
+  @media (max-width: 767px) {
+    .cycle-teaser__mini-grid {
+      grid-template-columns: 1fr;
+      max-width: 320px;
+    }
   }
 
   .mdgh-cycle-teaser__cta {
     text-align: center;
     margin-top: var(--space-7);
-  }
-
-  @media (max-width: 768px) {
-    .mdgh-cycle-teaser__grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mdgh-cycle-teaser__card img {
-      transition: none;
-    }
-    .mdgh-cycle-teaser__card:hover img,
-    .mdgh-cycle-teaser__card:focus-visible img {
-      transform: none;
-    }
   }
 </style>
