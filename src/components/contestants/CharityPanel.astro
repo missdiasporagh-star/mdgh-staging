@@ -1,0 +1,63 @@
+---
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+
+interface Props {
+  charity?: { title: string; description: string; url?: string };
+}
+
+const { charity } = Astro.props;
+---
+{charity && (
+  <aside class="charity-panel" aria-label="Charity platform">
+    <MetaLabel text="Charity platform" tone="accent" />
+    <h3 class="charity-panel__title">{charity.title}</h3>
+    <p class="charity-panel__desc">{charity.description}</p>
+    {charity.url && (
+      <a class="charity-panel__link" href={charity.url} target="_blank" rel="noopener">
+        Learn more →
+      </a>
+    )}
+  </aside>
+)}
+
+<style>
+  .charity-panel {
+    background: rgba(26, 8, 51, 0.5);
+    border: 1px solid rgba(255, 209, 102, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    align-self: start;
+  }
+  .charity-panel__title {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 24px;
+    color: #fff;
+    margin: 8px 0 12px;
+  }
+  .charity-panel__desc {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .charity-panel__link {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--color-saffron, #FFD166);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 209, 102, 0.4);
+    padding-bottom: 2px;
+  }
+  .charity-panel__link:hover,
+  .charity-panel__link:focus-visible {
+    color: #FFE599;
+    border-bottom-color: var(--color-saffron, #FFD166);
+    outline: none;
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import VotingDisabled from './VotingDisabled.astro';
+
+interface Props {
+  name: string;
+  cycleCrown: string;
+  sashNumber?: string;
+  region?: string;
+  heroImage: string;
+  heroImageAlt: string;
+  heroVideo?: { kind: 'youtube' | 'drive'; url: string };
+}
+
+const { name, cycleCrown, sashNumber, region, heroImage, heroImageAlt, heroVideo } = Astro.props;
+
+const metaParts = [`CROWN ${cycleCrown}`];
+if (sashNumber) metaParts.push(`SASH ${sashNumber}`);
+if (region) metaParts.push(region.toUpperCase());
+const meta = metaParts.join(' · ');
+---
+<section class="contestant-hero" aria-label={`Hero for ${name}`}>
+  <img
+    class="contestant-hero__image"
+    src={heroImage}
+    alt={heroImageAlt}
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+  />
+  <div class="contestant-hero__overlay" aria-hidden="true"></div>
+
+  {heroVideo && (
+    <button type="button" class="contestant-hero__play" aria-label={`Play video for ${name}`}>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </button>
+  )}
+
+  <div class="contestant-hero__vote">
+    <VotingDisabled />
+  </div>
+
+  <div class="contestant-hero__title">
+    <MetaLabel text={meta} tone="accent" />
+    <h1 class="contestant-hero__name">{name}</h1>
+  </div>
+</section>
+
+<style>
+  .contestant-hero {
+    position: relative;
+    height: 520px;
+    background: linear-gradient(135deg, #3a1855 0%, #1a0833 50%, #050111 100%);
+    overflow: hidden;
+  }
+  .contestant-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .contestant-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5,1,17,0) 40%, rgba(5,1,17,0.6) 90%);
+  }
+  .contestant-hero__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px;
+    height: 72px;
+    background: rgba(255, 209, 102, 0.18);
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    color: var(--color-saffron, #FFD166);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 200ms cubic-bezier(.4, 0, .2, 1), background 200ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .contestant-hero__play:hover,
+  .contestant-hero__play:focus-visible {
+    transform: translate(-50%, -50%) scale(1.06);
+    background: rgba(255, 209, 102, 0.28);
+    outline: 2px solid var(--color-saffron, #FFD166);
+    outline-offset: 2px;
+  }
+  .contestant-hero__vote {
+    position: absolute;
+    top: 48px;
+    right: 48px;
+    z-index: 3;
+  }
+  .contestant-hero__title {
+    position: absolute;
+    bottom: 48px;
+    left: 48px;
+    right: 48px;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 2;
+  }
+  .contestant-hero__name {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  @media (max-width: 767px) {
+    .contestant-hero { height: 380px; }
+    .contestant-hero__title { left: 20px; right: 20px; bottom: 20px; }
+    .contestant-hero__vote { top: 20px; right: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contestant-hero__play { transition: none; }
+  }
+</style>

@@ -1,0 +1,148 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import ContestantHero from '~/components/contestants/ContestantHero.astro';
+import CharityPanel from '~/components/contestants/CharityPanel.astro';
+import GalleryRow from '~/components/contestants/GalleryRow.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const contestants = await getCollection('contestants');
+  return contestants.map((c) => ({
+    params: { slug: c.slug },
+    props: { entry: c },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const cycle = await getEntry(entry.data.cycle);
+const cycleCrown = cycle?.data.crownNumber ?? '';
+
+const social = entry.data.social;
+---
+<PageLayout
+  title={`${entry.data.name} · Crown ${cycleCrown} · Miss Diaspora Ghana`}
+  description={entry.data.charityPlatform?.description ?? `${entry.data.name}, Crown ${cycleCrown} contestant.`}
+>
+  <ContestantHero
+    name={entry.data.name}
+    cycleCrown={cycleCrown}
+    sashNumber={entry.data.sashNumber}
+    region={entry.data.region}
+    heroImage={entry.data.heroImage}
+    heroImageAlt={entry.data.heroImageAlt}
+    heroVideo={entry.data.heroVideo}
+  />
+
+  <article class="contestant-detail">
+    <div class="contestant-detail__main">
+      <div class="contestant-detail__bio">
+        <MetaLabel text="Her story" tone="accent" />
+        <div class="contestant-detail__prose">
+          <Content />
+        </div>
+      </div>
+      {entry.data.charityPlatform && <CharityPanel charity={entry.data.charityPlatform} />}
+    </div>
+
+    {entry.data.gallery && entry.data.gallery.length > 0 && (
+      <GalleryRow gallery={entry.data.gallery} />
+    )}
+
+    <footer class="contestant-detail__footer">
+      <a class="contestant-detail__back" href="/contestants">← Back to the cover lineup</a>
+      {social && (
+        <div class="contestant-detail__social">
+          {social.instagram && (
+            <a class="contestant-detail__chip" href={`https://instagram.com/${social.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">
+              Instagram
+            </a>
+          )}
+          {social.tiktok && (
+            <a class="contestant-detail__chip" href={`https://tiktok.com/@${social.tiktok.replace(/^@/, '')}`} target="_blank" rel="noopener">
+              TikTok
+            </a>
+          )}
+        </div>
+      )}
+    </footer>
+  </article>
+</PageLayout>
+
+<style>
+  .contestant-detail {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+  .contestant-detail__main {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 48px;
+    margin-bottom: 32px;
+  }
+  .contestant-detail__bio {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .contestant-detail__prose {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .contestant-detail__prose :global(p) { margin: 0 0 1em; }
+  .contestant-detail__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(107, 43, 217, 0.25);
+    flex-wrap: wrap;
+  }
+  .contestant-detail__back {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--color-saffron, #FFD166);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .contestant-detail__back:hover,
+  .contestant-detail__back:focus-visible {
+    color: #FFE599;
+    outline: none;
+  }
+  .contestant-detail__social {
+    display: flex;
+    gap: 12px;
+  }
+  .contestant-detail__chip {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .contestant-detail__chip:hover,
+  .contestant-detail__chip:focus-visible {
+    border-color: rgba(255, 209, 102, 0.4);
+    color: #fff;
+    outline: none;
+  }
+  @media (max-width: 767px) {
+    .contestant-detail__main {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>
