@@ -1,5 +1,6 @@
 ---
 import Button from '~/components/ui/Button.astro';
+import { getCurrentCycle } from '~/lib/content/queries';
 
 interface Props {
   eyebrow?: string;
@@ -12,6 +13,13 @@ interface Props {
 }
 
 const { eyebrow, headline, subline, bgVideoUrl, bgPosterImage, cta } = Astro.props;
+
+// Resolve live cycle status pill (current cycle only)
+const currentCycle = await getCurrentCycle().catch(() => undefined);
+const cycleLabel =
+  currentCycle && currentCycle.data.status === 'current'
+    ? `${currentCycle.data.crownNumber.toUpperCase()} · CYCLE ${currentCycle.data.year} · OPEN`
+    : eyebrow;
 ---
 
 <section class="mdgh-hero-chapter" data-chapter="hero" aria-label="Hero">
@@ -32,12 +40,15 @@ const { eyebrow, headline, subline, bgVideoUrl, bgPosterImage, cta } = Astro.pro
   <div class="mdgh-hero-chapter__overlay" aria-hidden="true"></div>
 
   <div class="mdgh-hero-chapter__content">
-    {eyebrow && <p class="mdgh-hero-chapter__eyebrow">{eyebrow}</p>}
+    {cycleLabel && <p class="mdgh-hero-chapter__eyebrow">{cycleLabel}</p>}
     {headline && <h1 class="mdgh-hero-chapter__headline" data-reveal>{headline}</h1>}
     {subline && <p class="mdgh-hero-chapter__subline" data-reveal data-reveal-delay="0.4">{subline}</p>}
     {cta?.label && cta?.href && (
       <div class="mdgh-hero-chapter__cta" data-reveal data-reveal-delay="0.6">
         <Button variant={cta.variant ?? 'primary'} href={cta.href}>{cta.label}</Button>
+        <a class="hero-chapter__secondary-cta" href="/quiz">
+          Or find your archetype &rarr;
+        </a>
       </div>
     )}
   </div>
@@ -108,6 +119,36 @@ const { eyebrow, headline, subline, bgVideoUrl, bgPosterImage, cta } = Astro.pro
     font-size: clamp(18px, 2vw, 22px);
     max-width: 640px;
     margin: 0 auto var(--space-6);
+  }
+
+  .mdgh-hero-chapter__cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .hero-chapter__secondary-cta {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 209, 102, 0.4);
+    padding-bottom: 2px;
+    transition: color 200ms cubic-bezier(.4, 0, .2, 1), border-color 200ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .hero-chapter__secondary-cta:hover,
+  .hero-chapter__secondary-cta:focus-visible {
+    color: var(--color-saffron, #FFD166);
+    border-bottom-color: var(--color-saffron, #FFD166);
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-chapter__secondary-cta { transition: none; }
   }
 
   .mdgh-hero-chapter__scroll {
