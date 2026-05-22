@@ -1,0 +1,34 @@
+{
+  "order": 1,
+  "question": "Which moment feels most like home?",
+  "options": [
+    {
+      "label": "Morning kelewele in Osu",
+      "weights": [
+        { "region": "Greater Accra", "weight": 5 },
+        { "region": "Eastern", "weight": 2 },
+        { "region": "Central", "weight": 1 }
+      ]
+    },
+    {
+      "label": "Kente in a Kumasi courtyard",
+      "weights": [
+        { "region": "Ashanti", "weight": 5 },
+        { "region": "Eastern", "weight": 2 }
+      ]
+    },
+    {
+      "label": "Drums on the edge of Lake Volta",
+      "weights": [
+        { "region": "Volta", "weight": 5 },
+        { "region": "Eastern", "weight": 1 }
+      ]
+    },
+    {
+      "label": "Harmattan light in Tamale",
+      "weights": [
+        { "region": "Northern", "weight": 5 }
+      ]
+    }
+  ]
+}

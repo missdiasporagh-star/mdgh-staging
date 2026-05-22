@@ -1,0 +1,32 @@
+{
+  "order": 2,
+  "question": "What rhythm carries you on a good day?",
+  "options": [
+    {
+      "label": "Highlife from the kitchen radio",
+      "weights": [
+        { "region": "Greater Accra", "weight": 4 },
+        { "region": "Central", "weight": 2 }
+      ]
+    },
+    {
+      "label": "Borborbor at a family gathering",
+      "weights": [
+        { "region": "Volta", "weight": 5 }
+      ]
+    },
+    {
+      "label": "Adowa at a royal wedding",
+      "weights": [
+        { "region": "Ashanti", "weight": 5 }
+      ]
+    },
+    {
+      "label": "Fontomfrom — slow, ceremonial",
+      "weights": [
+        { "region": "Eastern", "weight": 4 },
+        { "region": "Ashanti", "weight": 2 }
+      ]
+    }
+  ]
+}
