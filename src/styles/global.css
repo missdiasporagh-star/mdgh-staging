@@ -1,4 +1,39 @@
 @import 'tailwindcss';
+
+/* Preloaded local @font-face declarations — `font-display: optional` eliminates
+ * the FOIT/FOUT swap that was causing layout-wide CLS (Diaspora 0.122 in Phase 2)
+ * and the LCP drag (Heritage 3171ms, Quiz 3210ms). Latin subset only — non-Latin
+ * characters fall through to the @fontsource imports below.
+ * Files preloaded from BaseLayout.astro <head>. */
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('/fonts/fraunces-italic-wght.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('/fonts/fraunces-normal-wght.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('/fonts/inter-normal-wght.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('/fonts/jetbrains-mono-400-normal.woff2') format('woff2');
+}
+
 @import '@fontsource-variable/fraunces';
 @import '@fontsource-variable/inter';
 @import '@fontsource/jetbrains-mono/400.css';
