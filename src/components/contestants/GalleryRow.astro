@@ -1,0 +1,55 @@
+---
+import Portrait from '~/components/ui/Portrait.astro';
+
+interface MediaRef {
+  kind: 'image' | 'youtube' | 'drive';
+  src: string;
+  alt?: string;
+  caption?: string;
+}
+
+interface Props {
+  gallery: MediaRef[];
+}
+
+const { gallery } = Astro.props;
+
+const imageItems = gallery.filter((g) => g.kind === 'image');
+---
+{imageItems.length > 0 && (
+  <section class="gallery-row" aria-label="Gallery">
+    <div class="gallery-row__head">
+      <span class="gallery-row__label">Gallery</span>
+    </div>
+    <div class="gallery-row__grid">
+      {imageItems.slice(0, 8).map((item) => (
+        <Portrait src={item.src} alt={item.alt || ''} aspect="3 / 4" />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .gallery-row {
+    padding: 24px 0;
+  }
+  .gallery-row__head { margin-bottom: 14px; }
+  .gallery-row__label {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--color-saffron, #FFD166);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .gallery-row__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 767px) {
+    .gallery-row__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
