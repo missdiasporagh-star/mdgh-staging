@@ -1,0 +1,34 @@
+{
+  "order": 4,
+  "question": "What does your hand know how to make?",
+  "options": [
+    {
+      "label": "A meal that feeds twenty",
+      "weights": [
+        { "region": "Central", "weight": 5 },
+        { "region": "Eastern", "weight": 2 }
+      ]
+    },
+    {
+      "label": "A cloth that tells a name",
+      "weights": [
+        { "region": "Ashanti", "weight": 5 },
+        { "region": "Volta", "weight": 2 }
+      ]
+    },
+    {
+      "label": "A net that catches what feeds a village",
+      "weights": [
+        { "region": "Western", "weight": 5 },
+        { "region": "Central", "weight": 2 }
+      ]
+    },
+    {
+      "label": "A speech that turns a meeting",
+      "weights": [
+        { "region": "Greater Accra", "weight": 4 },
+        { "region": "Eastern", "weight": 3 }
+      ]
+    }
+  ]
+}

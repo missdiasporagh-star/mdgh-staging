@@ -1,0 +1,33 @@
+{
+  "order": 3,
+  "question": "Which value did your grandmother live?",
+  "options": [
+    {
+      "label": "Patience — the long view",
+      "weights": [
+        { "region": "Northern", "weight": 5 },
+        { "region": "Eastern", "weight": 3 }
+      ]
+    },
+    {
+      "label": "Generosity — the open kitchen",
+      "weights": [
+        { "region": "Central", "weight": 4 },
+        { "region": "Western", "weight": 3 }
+      ]
+    },
+    {
+      "label": "Pride of craft — the perfect line",
+      "weights": [
+        { "region": "Ashanti", "weight": 4 },
+        { "region": "Volta", "weight": 2 }
+      ]
+    },
+    {
+      "label": "Wit — the read-the-room",
+      "weights": [
+        { "region": "Greater Accra", "weight": 5 }
+      ]
+    }
+  ]
+}

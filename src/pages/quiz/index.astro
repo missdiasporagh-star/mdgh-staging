@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import QuizEngine from '~/components/quiz/QuizEngine.tsx';
+
+const questionEntries = await getCollection('quiz-questions');
+const questions = questionEntries
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order);
+---
+<PageLayout
+  title="Which Ghana are you? · Heritage Quiz · Miss Diaspora Ghana"
+  description="Six questions, one archetype. The region of Ghana whose spirit lives loudest in you."
+>
+  <div class="quiz-page">
+    <QuizEngine questions={questions} client:load />
+  </div>
+</PageLayout>
+
+<style>
+  .quiz-page {
+    min-height: 80vh;
+    background: radial-gradient(ellipse at center, #1a0833 0%, #050111 80%);
+    padding: 80px 0 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>

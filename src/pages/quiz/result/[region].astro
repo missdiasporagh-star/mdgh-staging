@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import ResultHero from '~/components/quiz/ResultHero.astro';
+import { slugToRegion } from '~/lib/quiz/types';
+
+const { region: slug } = Astro.params;
+if (!slug) return Astro.redirect('/quiz');
+
+const region = slugToRegion(slug);
+if (!region) return Astro.redirect('/quiz');
+
+const results = await getCollection('quiz-results');
+const entry = results.find((r) => r.data.region === region);
+if (!entry) return Astro.redirect('/quiz');
+
+const { Content } = await entry.render();
+
+const description = entry.data.shortLine ?? `${entry.data.archetypeName} — ${region}.`;
+// ogImage deferred to Phase 4.5 (Satori endpoint not yet shipped).
+---
+<PageLayout
+  title={`You are ${region} — ${entry.data.archetypeName} · Heritage Quiz`}
+  description={description}
+>
+  <ResultHero
+    region={region}
+    archetypeName={entry.data.archetypeName}
+    shortLine={entry.data.shortLine}
+    accentHex={entry.data.accentHex}
+  />
+
+  <article class="result-prose" style={`--accent: ${entry.data.accentHex}`}>
+    <Content />
+
+    <div class="result-prose__actions">
+      <button
+        type="button"
+        class="result-prose__share"
+        data-share-button
+        data-share-url={`/quiz/result/${slug}`}
+        data-share-title={`I am ${region} — ${entry.data.archetypeName}`}
+      >
+        Share
+      </button>
+      <a class="result-prose__retake" href="/quiz">Retake</a>
+    </div>
+  </article>
+
+  <script>
+    const btn = document.querySelector<HTMLButtonElement>('[data-share-button]');
+    btn?.addEventListener('click', async () => {
+      const path = btn.dataset.shareUrl ?? '/';
+      const title = btn.dataset.shareTitle ?? 'Heritage Quiz';
+      const url = `${location.origin}${path}`;
+      if (navigator.share) {
+        try { await navigator.share({ title, url }); } catch { /* user cancelled */ }
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+      }
+    });
+  </script>
+</PageLayout>
+
+<style>
+  .result-prose {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .result-prose :global(p) { margin: 0 0 1.2em; }
+  .result-prose__actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .result-prose__share {
+    background: var(--color-saffron, #FFD166);
+    color: var(--color-deep-violet, #1a0833);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .result-prose__retake {
+    background: transparent;
+    color: var(--color-saffron, #FFD166);
+    border: 1px solid rgba(255, 209, 102, 0.4);
+    padding: 14px 32px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+</style>

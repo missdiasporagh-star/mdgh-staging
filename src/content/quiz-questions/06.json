@@ -1,0 +1,33 @@
+{
+  "order": 6,
+  "question": "What do you dream of building?",
+  "options": [
+    {
+      "label": "A library that holds every dialect",
+      "weights": [
+        { "region": "Eastern", "weight": 4 },
+        { "region": "Ashanti", "weight": 3 }
+      ]
+    },
+    {
+      "label": "A coast that knows itself again",
+      "weights": [
+        { "region": "Western", "weight": 5 },
+        { "region": "Central", "weight": 2 }
+      ]
+    },
+    {
+      "label": "A stage where every voice from the north is heard",
+      "weights": [
+        { "region": "Northern", "weight": 5 }
+      ]
+    },
+    {
+      "label": "A studio where ideas become products before lunch",
+      "weights": [
+        { "region": "Greater Accra", "weight": 5 },
+        { "region": "Ashanti", "weight": 1 }
+      ]
+    }
+  ]
+}
