@@ -1,0 +1,89 @@
+---
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+
+interface Props {
+  region: string;
+  archetypeName: string;
+  shortLine?: string;
+  accentHex: string;
+}
+
+const { region, archetypeName, shortLine, accentHex } = Astro.props;
+---
+<section class="result-hero" style={`--accent: ${accentHex}`}>
+  <div class="result-hero__accent" aria-hidden="true"></div>
+  <div class="result-hero__inner">
+    <MetaLabel text="YOUR ARCHETYPE · CROWN HERITAGE" tone="accent" />
+    <div class="result-hero__youre">YOU ARE</div>
+    <h1 class="result-hero__name">{region}</h1>
+    <div class="result-hero__archetype">{archetypeName}</div>
+    {shortLine && <p class="result-hero__line">{shortLine}</p>}
+  </div>
+</section>
+
+<style>
+  .result-hero {
+    position: relative;
+    padding: 96px 24px 48px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a0833 0%, #0a0414 40%, #050111 100%);
+  }
+  .result-hero__accent {
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent, #FFD166) 0%, transparent 60%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .result-hero__inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-hero__youre {
+    font-family: 'JetBrains Mono Variable', 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent, #FFD166);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-top: 16px;
+  }
+  .result-hero__name {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(72px, 12vw, 112px);
+    line-height: 0.95;
+    color: #fff;
+    letter-spacing: -0.04em;
+    margin: 8px 0 4px;
+  }
+  .result-hero__archetype {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 3vw, 28px);
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 4px;
+  }
+  .result-hero__line {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(17px, 2.5vw, 22px);
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 16px auto 0;
+    max-width: 42ch;
+  }
+</style>
