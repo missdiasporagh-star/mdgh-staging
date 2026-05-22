@@ -1,5 +1,6 @@
 ---
 import Button from '~/components/ui/Button.astro';
+import MiniGlobe from './MiniGlobe.tsx';
 
 interface Props {
   eyebrow?: string;
@@ -30,7 +31,9 @@ const { eyebrow, headline, body, cta, cityCount = 0 } = Astro.props;
       )}
     </div>
     <div class="mdgh-diaspora-teaser__viz" aria-hidden="true">
-      <div class="mdgh-globe-stub"></div>
+      <div class="mdgh-diaspora-teaser__globe-wrap">
+        <MiniGlobe client:visible />
+      </div>
     </div>
   </div>
 </section>
@@ -98,33 +101,17 @@ const { eyebrow, headline, body, cta, cityCount = 0 } = Astro.props;
     place-items: center;
   }
 
-  .mdgh-globe-stub {
-    width: clamp(280px, 35vw, 480px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 30% 30%, rgba(255, 209, 102, 0.4), transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(107, 43, 217, 0.6), transparent 60%),
-      var(--color-deep-violet);
-    box-shadow:
-      inset 0 0 80px rgba(0, 0, 0, 0.5),
-      0 0 120px rgba(107, 43, 217, 0.4);
-    animation: mdgh-globe-spin 60s linear infinite;
-  }
-
-  @keyframes mdgh-globe-spin {
-    to { transform: rotate(360deg); }
+  .mdgh-diaspora-teaser__globe-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 200px;
+    min-height: 200px;
   }
 
   @media (max-width: 768px) {
     .mdgh-diaspora-teaser__inner {
       grid-template-columns: 1fr;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mdgh-globe-stub {
-      animation: none;
     }
   }
 </style>
