@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '~/layouts/PageLayout.astro';
+import MetaLabel from '~/components/ui/MetaLabel.astro';
+import ContestantCard from '~/components/contestants/ContestantCard.astro';
+
+const cycles = await getCollection('cycles');
+const currentCycle = cycles.find((c) => c.data.status === 'current');
+
+const allContestants = await getCollection('contestants');
+const contestants = currentCycle
+  ? allContestants.filter((c) => c.data.cycle.id === currentCycle.id)
+  : [];
+contestants.sort((a, b) => (a.data.sortOrder ?? 0) - (b.data.sortOrder ?? 0));
+
+const cycleCrown = currentCycle?.data.crownNumber ?? '';
+const cycleYear = currentCycle?.data.year ?? '';
+---
+<PageLayout
+  title={`Contestants · Crown ${cycleCrown} · Miss Diaspora Ghana`}
+  description={`Meet the women representing Crown ${cycleCrown} — their cities, their charities, their reasons.`}
+>
+  <div class="contestants-page">
+    <header class="contestants-page__header">
+      <MetaLabel
+        text={cycleYear ? `CROWN ${cycleCrown} · CYCLE ${cycleYear} · OPEN` : 'CONTESTANTS'}
+        tone="accent"
+      />
+      <h1 class="contestants-page__title">
+        The <em class="contestants-page__italic">cover lineup.</em>
+      </h1>
+      <p class="contestants-page__lede">
+        {contestants.length > 0
+          ? `${contestants.length} women, ${contestants.length} stories, one crown. Meet the contestants representing Crown ${cycleCrown} — their cities, their charities, their reasons.`
+          : 'The cycle is open. Contestants will appear here as they’re announced.'}
+      </p>
+    </header>
+
+    {contestants.length > 0 && (
+      <div class="contestants-page__grid">
+        {contestants.map((c, i) => (
+          <ContestantCard
+            slug={c.slug}
+            name={c.data.name}
+            sashNumber={c.data.sashNumber}
+            sortOrder={c.data.sortOrder}
+            region={c.data.region}
+            cycleCrown={cycleCrown}
+            heroImage={c.data.heroImage}
+            heroImageAlt={c.data.heroImageAlt}
+            heroVideo={c.data.heroVideo}
+            index={i}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</PageLayout>
+
+<style>
+  .contestants-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 120px 24px 64px;
+  }
+  .contestants-page__header {
+    max-width: 780px;
+    margin-bottom: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .contestants-page__title {
+    font-family: 'Fraunces Variable', 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.05;
+    margin: 0;
+    color: #fff;
+  }
+  .contestants-page__italic {
+    font-style: italic;
+    color: var(--color-saffron, #FFD166);
+  }
+  .contestants-page__lede {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+  .contestants-page__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1023px) {
+    .contestants-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 767px) {
+    .contestants-page__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
